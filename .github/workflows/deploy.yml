@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        run:
+          git config --global user.email "enriquezrene.ap@gmail.com"
+          git config --global user.name "Github Actions on behalf of Rene"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20.17.0
