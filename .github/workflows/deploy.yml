@@ -12,10 +12,10 @@ jobs:
         with:
           node-version: 20.17.0
       - name: Configure Git
-        run:
-            git config --global user.email "enriquezrene.ap@gmail.com"
-            git config --global user.name "Github Actions on behalf of Rene"
-            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}    
+        run: |
+          git config --global user.email "enriquezrene.ap@gmail.com"
+          git config --global user.name "Rene Enriquez"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
       - name: Install dependencies
         run: npm install
       - name: Build Gatsby site
