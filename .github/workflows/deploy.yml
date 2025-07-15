@@ -12,12 +12,12 @@ jobs:
         with:
           node-version: 20.17.0
       - name: Install dependencies
-          run: npm install
+        run: npm install
       - name: Build Gatsby site
-          run: npm run build
+        run: npm run build
       - name: Deploy to GitHub Pages
-          uses: enriikke/gatsby-gh-pages-action@v2
-          with:
-            access-token: ${{ secrets.GITHUB_TOKEN }}
-              deploy-branch: gh-pages
+        uses: enriikke/gatsby-gh-pages-action@v2
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-branch: gh-pages
               
