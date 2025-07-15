@@ -1,38 +1,34 @@
 import * as React from 'react'
-import { Link, graphql } from 'gatsby'
+import { graphql } from 'gatsby'
 import Layout from '../../components/layout'
 import Seo from '../../components/seo'
-import { GatsbyImage, getImage } from 'gatsby-plugin-image'
+import Item from './item'
+import items from "../../../alquiler/herramientas-construccion/catalogo.json"
+
+
 
 const BlogPage = ({ data }) => {
+  const titulo = items.titulo;
+  const description = items.descripcion;
   return (
-    <Layout pageTitle="Alquiler de herramientas">
-      <div class="row">
+    <Layout pageTitle={titulo} description={description}>
+      
+      <div className="row">
         {
-          data.allMdx.nodes.map((node) => {
-            const image = getImage(node.frontmatter.hero_image)
-            return (
-              <div class="col-md-3" key={node.id} >
-                <div class="card mb-3 shadow-sm">
-                  <GatsbyImage class="bd-placeholder-img"
-                    image={image}
-                    alt={node.frontmatter.hero_image_alt}
-                  />
-                  <div class="card-body">
-                    <p class="card-text">{node.excerpt}</p>
-                    <p class="card-text">{node.frontmatter.precio} USD</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Alquilar</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                      </div>
-                      <small>9 min</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            )
+          data.allFile.edges.map((item) => {
+            const articulo = buscarArticuloPorNombre(item.node.name);
+            const node = {
+              frontmatter: {
+                hero_image: {
+                  childImageSharp: item.node.childImageSharp
+                }
+              },
+              nombre: item.node.name,
+              precio: articulo.precio,
+              descripcion: articulo.descripcion,
+              id: item.node.id
+            };
+            return <Item key={node.id} node={node} />
           })
         }
       </div>
@@ -43,7 +39,15 @@ const BlogPage = ({ data }) => {
 
 export const Head = () => <Seo title="My Blog Posts" />
 
-const querysss = graphql`
+const buscarArticuloPorNombre = (nombre) => {
+  const articuloEncontrado = items.articulos.find(item => item.nombre === nombre);
+  if (!articuloEncontrado) {
+    return { precio: 'N/A', descripcion: 'Descripcion no disponible' };
+  }
+  return items.articulos.find(item => item.nombre === nombre);
+}
+
+export const query = graphql`
   query {
           allFile(
             filter: {extension: {regex: "/(avif)/"}, 
@@ -60,28 +64,6 @@ const querysss = graphql`
             }
           }
         } 
-`
-
-export const query = graphql`
-  query {
-    allMdx(sort: { frontmatter: { date: DESC }}) {
-      nodes {
-        frontmatter {
-          date(formatString: "MMMM D, YYYY")
-          title
-          slug
-          precio
-          hero_image {
-            childImageSharp {
-              gatsbyImageData(height: 225, layout: CONSTRAINED, placeholder: BLURRED)
-            }
-          }
-        }
-        id
-        excerpt
-      }
-    }
-  }
 `
 
 export default BlogPage

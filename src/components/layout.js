@@ -1,16 +1,12 @@
 import * as React from 'react'
-import { Link, useStaticQuery, graphql } from 'gatsby'
+import { useStaticQuery, graphql } from 'gatsby'
 import {
   container,
-  heading,
-  navLinks,
-  navLinkItem,
-  navLinkText,
   siteTitle,
 } from './layout.module.css'
 
 
-const Layout = ({ pageTitle, children }) => {
+const Layout = ({ pageTitle, children, description }) => {
   const data = useStaticQuery(graphql`
     query {
       site {
@@ -25,7 +21,7 @@ const Layout = ({ pageTitle, children }) => {
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
-          <a className="navbar-brand" href="/">TechnicalXpress</a>
+          <a className="navbar-brand" href="/">TODO ES ALQUILABLE</a>
           <button
             className="navbar-toggler"
             type="button"
@@ -40,23 +36,27 @@ const Layout = ({ pageTitle, children }) => {
                 <a className="nav-link" href="/">Inicio</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/alquiler">Alquiler de herramientas</a>
+                <a className="nav-link" href="/alquiler">Alquiler</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/about">Venta de andamios</a>
+                <a className="nav-link" href="/about">Quienes somos</a>
               </li>
             </ul>
           </div>
         </div>
       </nav>
 
+      <main role="main">
+
+        <section className="jumbotron text-center">
+          <div className="container">
+            <header className={siteTitle}>{pageTitle}</header>
+            <p className="lead text-muted">{description}</p>
+          </div>
+        </section>
+      </main>
       <div className={container}>
-        <header className={siteTitle}></header>
-        <p>
-          Te ofrecemos una amplia variedad de herramientas para todo tipo de tareas. Sin salir de tu hogar o proyecto, podrás recibir las herramientas que necesitas en solo 24 horas. ¡El transporte es completamente GRATIS, excepto para el alquiler de andamios! Llámanos al 0998960052 / 0984480673 y obtén lo que necesitas ya!
-        </p>
         <main>
-          <h1 className={heading}>{pageTitle}</h1>
           {children}
         </main>
       </div>
