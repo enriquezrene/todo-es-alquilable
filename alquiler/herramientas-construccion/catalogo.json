@@ -1,0 +1,22 @@
+{
+    articulos: [
+        {
+            id: "1",
+            nombre: "Canastilla andamio colgante",
+            precio: 25.00,
+            imagen: "./canastilla.avif"
+        },
+        {
+            id: "2",
+            nombre: "Concretera",
+            precio: 30.00,
+            imagen: "./concretera.avif"
+        },
+        {
+            id: "3",
+            nombre: "Andamios por modulo + tablon",
+            precio: 15.00,
+            imagen: "./andamio.avif"
+        }
+    ]
+}

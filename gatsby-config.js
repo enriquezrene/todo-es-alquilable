@@ -20,8 +20,8 @@ module.exports = {
     {
       resolve: `gatsby-source-filesystem`,
       options: {
-        name: `blog`,
-        path: `${__dirname}/blog`,
+        name: `alquiler`,
+        path: `${__dirname}/alquiler`,
       },
     },
     `gatsby-transformer-sharp`,
