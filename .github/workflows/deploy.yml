@@ -1,9 +1,8 @@
 name: Deploy Gatsby to GitHub Pages
-
 on:
   push:
     branches:
-      - master  # Trigger deployment on push to master
+      - main  # Trigger deployment on push to main
 
 permissions:
   contents: write  # Required to push to gh-pages
