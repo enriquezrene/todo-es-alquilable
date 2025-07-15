@@ -2,7 +2,7 @@ import * as React from 'react'
 import { graphql } from 'gatsby'
 import Layout from '../../components/layout'
 import Seo from '../../components/seo'
-import Item from './item'
+import Item from '../../components/alquiler/item'
 import items from "../../../alquiler/herramientas-construccion/catalogo.json"
 
 
