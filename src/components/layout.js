@@ -7,18 +7,30 @@ import {
 
 
 const Layout = ({ pageTitle, children, description }) => {
-  const data = useStaticQuery(graphql`
+  const categorias = useStaticQuery(graphql`
     query {
-      site {
-        siteMetadata {
-          title
-        }
-      }
-    }
+            allMdx {
+              nodes {              
+                id
+                excerpt
+                frontmatter {
+                  slug
+                  titulo
+                  descripcion
+                  imagen {
+                    childImageSharp {
+                      gatsbyImageData(height: 225, layout: CONSTRAINED)
+                    }
+                  }
+                }
+              }
+            }
+          }
   `)
 
   return (
     <>
+
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary py-3">
         <div className="container">
           <a className="navbar-brand fs-3 fw-bold" href="/">
@@ -42,10 +54,32 @@ const Layout = ({ pageTitle, children, description }) => {
                   Inicio
                 </a>
               </li>
-              <li className="nav-item mx-2">
-                <a className="nav-link text-white fs-5" href="/alquiler">
+              <li className="nav-item dropdown mx-2">
+                <a
+                  className="nav-link dropdown-toggle text-white fs-5"
+                  href="#"
+                  id="navbarDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
                   Alquilar
                 </a>
+                <ul className="dropdown-menu dropdown-menu-dark bg-primary border-0 shadow-lg" aria-labelledby="navbarDropdown">
+                  {categorias.allMdx.nodes.map(item => {
+                    return (
+                      <>
+                        <li key={item.id}>
+                          <a className="dropdown-item py-2 px-3 text-white hover-custom" href={`/alquiler/${item.frontmatter.slug}`}>
+                            <div className="fw-bold">{item.frontmatter.titulo}</div>
+                            <small className="text-white-50">{item.frontmatter.descripcion}</small>
+                          </a>
+                        </li>
+                        <li><hr className="dropdown-divider mx-3 my-1 bg-white-25" /></li>
+                      </>
+                    )
+                  })}
+                </ul>
               </li>
               <li className="nav-item mx-2">
                 <a className="nav-link text-white fs-5" href="/about">
@@ -55,8 +89,9 @@ const Layout = ({ pageTitle, children, description }) => {
             </ul>
             <div className="ms-lg-4 mt-3 mt-lg-0">
               <a
-                href={`https://wa.me/0998960052?text=Hola,%20quiero%20alquilar%20mis%20artículos`}
+                href={`https://wa.me/+593998960052?text=Hola,%20quiero%20alquilar%20mis%20artículos`}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="btn btn-warning text-primary fw-bold px-4"
               >
                 Publicar artículo
@@ -65,6 +100,8 @@ const Layout = ({ pageTitle, children, description }) => {
           </div>
         </div>
       </nav>
+
+
 
       <main role="main">
 
@@ -83,5 +120,6 @@ const Layout = ({ pageTitle, children, description }) => {
     </>
   )
 }
+
 
 export default Layout
