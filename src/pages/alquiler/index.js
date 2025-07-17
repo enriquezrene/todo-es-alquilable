@@ -47,8 +47,9 @@ export const query = graphql`
             allMdx {
               nodes {
                 id
-                excerpt
+                excerpt                
                 frontmatter {
+                  slug
                   titulo
                   descripcion
                   imagen {
