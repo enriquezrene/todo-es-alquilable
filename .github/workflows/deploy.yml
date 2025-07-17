@@ -24,7 +24,9 @@ jobs:
         run: npm install
 
       - name: Build Gatsby site
-        run: npm run build
+        run: |
+          export GATSBY_ENV=gh-pages
+          npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

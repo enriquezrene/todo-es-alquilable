@@ -10,7 +10,7 @@ const IndexPage = ({ data }) => {
     <Layout>
       <section id="categorias" className="py-5 bg-light">
         <div className="container">
-          <h2 className="text-center mb-5">¿Qué necesitas alquilar hoy?</h2>
+          <h2 className="text-center mb-5">¿Qué necesitas alquilar hoy...?</h2>
           <div className="row g-4">
 
 

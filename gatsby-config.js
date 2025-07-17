@@ -4,6 +4,8 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
 
+const isGitHubPages = process.env.GATSBY_ENV === "gh-pages";
+
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
