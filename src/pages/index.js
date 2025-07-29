@@ -103,6 +103,6 @@ export const query = graphql`
           }
   `
 
-export const Head = () => <Seo title="Home Page" description="Welcome to my Gatsby site!" />
+export const Head = () => <Seo title="Todo es Alquilable" description="Home Page" />
 
 export default IndexPage
