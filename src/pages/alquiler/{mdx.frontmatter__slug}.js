@@ -16,7 +16,6 @@ const BlogPost = ({ data }) => {
                     })
                 }
             </div>
-
         </Layout>
     )
 }
@@ -33,6 +32,7 @@ export const query = graphql`
                     precio
                     descripcion
                     nombre
+                    telefono
                     imagen {
                         childImageSharp {
                             gatsbyImageData(height: 225, layout: CONSTRAINED)

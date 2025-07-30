@@ -18,7 +18,7 @@ const Item = ({ node }) => {
           <div className="d-flex justify-content-between align-items-center">
             <div className="btn-group">
               <a
-                href={`https://wa.me/+593998960052?text=Hola,%20quiero%20alquilar:%20${encodeURIComponent(node.nombre)}-${encodeURIComponent(node.descripcion)}`}
+                href={`https://wa.me/${node.telefono}?text=Hola,%20quiero%20alquilar:%20${encodeURIComponent(node.nombre)}-${encodeURIComponent(node.descripcion)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-sm btn-outline-primary"
