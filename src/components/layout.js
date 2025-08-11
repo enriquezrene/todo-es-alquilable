@@ -89,9 +89,7 @@ const Layout = ({ pageTitle, children, description }) => {
             </ul>
             <div className="ms-lg-4 mt-3 mt-lg-0">
               <a
-                href={`https://wa.me/+593998960052?text=Hola,%20quiero%20alquilar%20mis%20artículos`}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/publicar`}
                 className="btn btn-warning text-primary fw-bold px-4"
               >
                 Publicar artículo

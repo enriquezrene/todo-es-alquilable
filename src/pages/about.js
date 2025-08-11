@@ -54,8 +54,7 @@ const AboutPage = () => {
   {/* CTA Final */}
   <section className="text-center bg-primary text-white p-5 rounded-3">
     <h2 className="mb-4">¿Listo para unirte a la comunidad?</h2>
-    <a href={`https://wa.me/+593998960052?text=Hola,%20quiero%20alquilar%20mis%20artículos`}
-                target="_blank" className="btn btn-warning btn-lg px-4 fw-bold">
+    <a href={`/publicar`} className="btn btn-warning btn-lg px-4 fw-bold">
       Regístrate gratis
     </a>
   </section>

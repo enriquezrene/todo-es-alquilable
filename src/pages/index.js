@@ -54,7 +54,7 @@ const IndexPage = ({ data }) => {
                     <GatsbyImage className="card-img-top" alt={item.frontmatter.titulo} placeholder="blurred"
                       layout="constrained"
                       image={image}
-                    />                    
+                    />
                     <div className="card-body">
                       <h5 className="card-title">{item.frontmatter.titulo}</h5>
                       <p className="card-text">{item.frontmatter.descripcion}</p>
@@ -72,8 +72,8 @@ const IndexPage = ({ data }) => {
         <div className="container">
           <h2 className="mb-4">¿Tienes algo para alquilar?</h2>
           <p className="lead mb-4">Gana dinero con lo que ya tienes.</p>
-          <a href={`https://wa.me/+593998960052?text=Hola,%20quiero%20alquilar%20mis%20artículos`}
-            target="_blank" className="btn btn-primary btn-lg px-4">Publicar artículo</a>
+          <a href={`/publicar`}
+            className="btn btn-primary btn-lg px-4">Publicar artículo</a>
         </div>
       </section>
     </Layout>
