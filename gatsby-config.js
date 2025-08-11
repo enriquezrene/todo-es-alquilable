@@ -18,6 +18,24 @@ module.exports = {
     siteUrl: `https://gatsbystarterdefaultsource.gatsbyjs.io/`,
   },
   plugins: [
+    {
+      resolve: `gatsby-plugin-google-gtag`,
+      options: {
+        // IDs de seguimiento
+        trackingIds: [
+          "G-CLFE5HR81K",
+        ],
+        gtagConfig: {
+          anonymize_ip: true, // Anonimiza direcciones IP
+          cookie_expires: 0, // Configuración de cookies
+        },
+        // Configuración del plugin
+        pluginConfig: {
+          head: true, // Coloca el script en el <head> para mejor precisión
+          respectDNT: true, // Respeta "Do Not Track"
+        },
+      },
+    },
     `gatsby-plugin-image`,
     {
       resolve: `gatsby-source-filesystem`,
