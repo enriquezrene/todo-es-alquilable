@@ -30,12 +30,12 @@ const Item = ({ node }) => {
             style={{ maxHeight: 350, margin: '0 auto' }}
           />
           <div className="card-body">
-            <p className="card-text">{node.descripcion}</p>
+            <p className="card-text">{node.descripcion}{console.log(node.descripcion)}</p>
             <p className="card-text">{node.precio} USD</p>
             <div className="d-flex justify-content-between align-items-center">
               <div className="btn-group">
                 <a
-                  href={`https://wa.me/${node.telefono}?text=Hola,%20quiero%20alquilar:%20${encodeURIComponent(node.nombre)}-${encodeURIComponent(node.descripcion)}`}
+                  href={`https://wa.me/${node.telefono}?text=Hola,%20quiero%20alquilar:%20${encodeURIComponent(node.nombre)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-sm btn-primary"
@@ -79,7 +79,7 @@ const Item = ({ node }) => {
               </div>
               <div className="modal-footer">
                 <a
-                  href={`https://wa.me/${node.telefono}?text=Hola,%20quiero%20alquilar:%20${encodeURIComponent(node.nombre)}-${encodeURIComponent(node.descripcion)}`}
+                  href={`https://wa.me/${node.telefono}?text=Hola,%20quiero%20alquilar:%20${encodeURIComponent(node.nombre)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-sm btn-primary"
