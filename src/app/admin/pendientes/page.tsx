@@ -12,6 +12,7 @@ import {
 import ListingReviewCard from '@/features/admin/components/ListingReviewCard'
 import Spinner from '@/shared/components/ui/Spinner'
 import EmptyState from '@/shared/components/feedback/EmptyState'
+import { registrarError } from '@/lib/registrar-error'
 import type { Anuncio } from '@/shared/types/anuncio'
 
 export default function PendientesPage() {
@@ -35,23 +36,38 @@ export default function PendientesPage() {
 
   const handleApprove = async (id: string) => {
     if (!user) return
-    await aprobarAnuncio(id, user.uid)
-    removeFromList(id)
-    mostrarToast('Anuncio aprobado', 'success')
+    try {
+      await aprobarAnuncio(id, user.uid)
+      removeFromList(id)
+      mostrarToast('Anuncio aprobado', 'success')
+    } catch (e) {
+      registrarError(e, 'PendientesPage:aprobar')
+      mostrarToast('Error al aprobar el anuncio', 'error')
+    }
   }
 
   const handleReject = async (id: string, reason: string) => {
     if (!user) return
-    await rechazarAnuncio(id, user.uid, reason)
-    removeFromList(id)
-    mostrarToast('Anuncio rechazado', 'info')
+    try {
+      await rechazarAnuncio(id, user.uid, reason)
+      removeFromList(id)
+      mostrarToast('Anuncio rechazado', 'info')
+    } catch (e) {
+      registrarError(e, 'PendientesPage:rechazar')
+      mostrarToast('Error al rechazar el anuncio', 'error')
+    }
   }
 
   const handleRequestChanges = async (id: string, reason: string) => {
     if (!user) return
-    await solicitarCambios(id, user.uid, reason)
-    removeFromList(id)
-    mostrarToast('Cambios solicitados', 'info')
+    try {
+      await solicitarCambios(id, user.uid, reason)
+      removeFromList(id)
+      mostrarToast('Cambios solicitados', 'info')
+    } catch (e) {
+      registrarError(e, 'PendientesPage:solicitar-cambios')
+      mostrarToast('Error al solicitar cambios', 'error')
+    }
   }
 
   if (loading) return <Spinner size="lg" />

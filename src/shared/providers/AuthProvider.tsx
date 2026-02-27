@@ -2,8 +2,10 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { onAuthStateChanged, type User } from 'firebase/auth'
-import { auth } from '@/lib/firebase/firebase-config'
+import { getAuthInstance } from '@/lib/firebase/firebase-config'
+import { doc, getDoc, getDb } from '@/lib/firebase/firebase-firestore'
 import type { RolUsuario } from '@/shared/types/usuario'
+import { registrarError } from '@/lib/registrar-error'
 
 type AuthContextValue = {
   user: User | null
@@ -23,12 +25,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(getAuthInstance(), async (firebaseUser) => {
       setUser(firebaseUser)
 
       if (firebaseUser) {
         const tokenResult = await firebaseUser.getIdTokenResult()
-        setRole((tokenResult.claims.role as RolUsuario) || 'user')
+        let userRole = tokenResult.claims.role as RolUsuario | undefined
+
+        if (!userRole || userRole === 'user') {
+          try {
+            const userDoc = await getDoc(doc(getDb(), 'users', firebaseUser.uid))
+            if (userDoc.exists()) {
+              userRole = userDoc.data().role as RolUsuario
+            }
+          } catch (e) {
+            registrarError(e, 'AuthProvider:role-fallback')
+          }
+        }
+
+        setRole(userRole || 'user')
       } else {
         setRole(null)
       }

@@ -1,5 +1,5 @@
 import { registrarConEmail, iniciarSesionConEmail, cerrarSesion, actualizarPerfil } from '@/lib/firebase/firebase-auth'
-import { doc, setDoc, getDoc, serverTimestamp, db } from '@/lib/firebase/firebase-firestore'
+import { doc, setDoc, getDoc, serverTimestamp, getDb } from '@/lib/firebase/firebase-firestore'
 import type { FormularioRegistro } from '../types'
 import type { RolUsuario } from '@/shared/types/usuario'
 
@@ -9,7 +9,7 @@ export async function registrarUsuario(datos: FormularioRegistro) {
 
   await actualizarPerfil(user, { displayName: datos.displayName })
 
-  await setDoc(doc(db, 'users', user.uid), {
+  await setDoc(doc(getDb(), 'users', user.uid), {
     uid: user.uid,
     email: datos.email,
     displayName: datos.displayName,
@@ -37,7 +37,7 @@ export async function cerrarSesionUsuario() {
 }
 
 export async function obtenerRolUsuario(uid: string): Promise<RolUsuario> {
-  const userDoc = await getDoc(doc(db, 'users', uid))
+  const userDoc = await getDoc(doc(getDb(), 'users', uid))
   if (userDoc.exists()) {
     return (userDoc.data().role as RolUsuario) || 'user'
   }

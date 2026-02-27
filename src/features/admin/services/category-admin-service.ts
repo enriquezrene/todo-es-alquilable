@@ -9,12 +9,12 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
-  db,
+  getDb,
 } from '@/lib/firebase/firebase-firestore'
 import type { Categoria, CategoriaSugerida } from '@/shared/types/categoria'
 
 export async function obtenerCategorias(): Promise<Categoria[]> {
-  const q = query(collection(db, 'categories'), orderBy('name', 'asc'))
+  const q = query(collection(getDb(), 'categories'), orderBy('name', 'asc'))
   const snapshot = await getDocs(q)
   return snapshot.docs.map((d) => ({
     id: d.id,
@@ -24,7 +24,7 @@ export async function obtenerCategorias(): Promise<Categoria[]> {
 }
 
 export async function crearCategoria(name: string, icon: string): Promise<string> {
-  const docRef = doc(collection(db, 'categories'))
+  const docRef = doc(collection(getDb(), 'categories'))
   await setDoc(docRef, {
     name,
     nameLower: name.toLowerCase(),
@@ -39,16 +39,16 @@ export async function crearCategoria(name: string, icon: string): Promise<string
 export async function actualizarCategoria(id: string, data: { name?: string; icon?: string; isActive?: boolean }): Promise<void> {
   const updates: Record<string, unknown> = { ...data }
   if (data.name) updates.nameLower = data.name.toLowerCase()
-  await updateDoc(doc(db, 'categories', id), updates)
+  await updateDoc(doc(getDb(), 'categories', id), updates)
 }
 
 export async function eliminarCategoria(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'categories', id))
+  await deleteDoc(doc(getDb(), 'categories', id))
 }
 
 export async function obtenerCategoriasSugeridas(): Promise<CategoriaSugerida[]> {
   const q = query(
-    collection(db, 'suggestedCategories'),
+    collection(getDb(), 'suggestedCategories'),
     where('status', '==', 'pendiente'),
     orderBy('createdAt', 'asc'),
   )
@@ -61,8 +61,8 @@ export async function obtenerCategoriasSugeridas(): Promise<CategoriaSugerida[]>
 }
 
 export async function aprobarCategoriaSugerida(id: string, icon: string): Promise<void> {
-  const sugRef = doc(db, 'suggestedCategories', id)
-  const snap = await getDocs(query(collection(db, 'suggestedCategories'), where('__name__', '==', id)))
+  const sugRef = doc(getDb(), 'suggestedCategories', id)
+  const snap = await getDocs(query(collection(getDb(), 'suggestedCategories'), where('__name__', '==', id)))
   if (snap.empty) return
 
   const data = snap.docs[0].data()
@@ -71,5 +71,5 @@ export async function aprobarCategoriaSugerida(id: string, icon: string): Promis
 }
 
 export async function rechazarCategoriaSugerida(id: string): Promise<void> {
-  await updateDoc(doc(db, 'suggestedCategories', id), { status: 'rechazada' })
+  await updateDoc(doc(getDb(), 'suggestedCategories', id), { status: 'rechazada' })
 }

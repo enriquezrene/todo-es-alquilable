@@ -17,7 +17,7 @@ import {
   increment,
   type DocumentSnapshot,
 } from 'firebase/firestore'
-import { db } from './firebase-config'
+import { getDbInstance } from './firebase-config'
 
 export {
   doc,
@@ -37,4 +37,6 @@ export {
 }
 export type { DocumentData, QueryConstraint, DocumentSnapshot }
 
-export { db }
+export function getDb() {
+  return getDbInstance()
+}

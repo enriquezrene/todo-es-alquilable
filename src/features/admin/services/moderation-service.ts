@@ -7,7 +7,7 @@ import {
   updateDoc,
   doc,
   serverTimestamp,
-  db,
+  getDb,
   type DocumentSnapshot,
 } from '@/lib/firebase/firebase-firestore'
 import type { Anuncio } from '@/shared/types/anuncio'
@@ -25,7 +25,7 @@ function docToAnuncio(docSnap: DocumentSnapshot): Anuncio {
 
 export async function obtenerAnunciosPendientes(): Promise<Anuncio[]> {
   const q = query(
-    collection(db, 'listings'),
+    collection(getDb(), 'listings'),
     where('status', '==', 'pendiente'),
     orderBy('createdAt', 'asc'),
   )
@@ -34,7 +34,7 @@ export async function obtenerAnunciosPendientes(): Promise<Anuncio[]> {
 }
 
 export async function aprobarAnuncio(listingId: string, moderatorId: string): Promise<void> {
-  await updateDoc(doc(db, 'listings', listingId), {
+  await updateDoc(doc(getDb(), 'listings', listingId), {
     status: 'aprobado',
     moderatorId,
     moderatedAt: serverTimestamp(),
@@ -47,7 +47,7 @@ export async function rechazarAnuncio(
   moderatorId: string,
   reason: string,
 ): Promise<void> {
-  await updateDoc(doc(db, 'listings', listingId), {
+  await updateDoc(doc(getDb(), 'listings', listingId), {
     status: 'rechazado',
     rejectionReason: reason,
     moderatorId,
@@ -61,7 +61,7 @@ export async function solicitarCambios(
   moderatorId: string,
   reason: string,
 ): Promise<void> {
-  await updateDoc(doc(db, 'listings', listingId), {
+  await updateDoc(doc(getDb(), 'listings', listingId), {
     status: 'cambios_requeridos',
     rejectionReason: reason,
     moderatorId,

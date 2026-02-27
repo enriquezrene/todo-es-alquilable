@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { getDocs, collection, query, where, db } from '@/lib/firebase/firebase-firestore'
+import { getDocs, collection, query, where, getDb } from '@/lib/firebase/firebase-firestore'
 import { categoriasIniciales } from '@/lib/dominio/categorias-iniciales'
 import { obtenerNombresProvincias } from '@/lib/dominio/provincias-ecuador'
+import { registrarError } from '@/lib/registrar-error'
 import Select from '@/shared/components/ui/Select'
 import Input from '@/shared/components/ui/Input'
 import Button from '@/shared/components/ui/Button'
@@ -41,13 +42,14 @@ export default function FilterPanel({
   useEffect(() => {
     async function cargar() {
       try {
-        const q = query(collection(db, 'categories'), where('isActive', '==', true))
+        const q = query(collection(getDb(), 'categories'), where('isActive', '==', true))
         const snapshot = await getDocs(q)
         const cats = snapshot.empty
           ? categoriasIniciales.map((c, i) => ({ value: `seed-${i}`, label: c.nombre }))
           : snapshot.docs.map((doc) => ({ value: doc.id, label: doc.data().name }))
         setCategorias([{ value: '', label: 'Todas' }, ...cats])
-      } catch {
+      } catch (e) {
+        registrarError(e, 'FilterPanel:cargar-categorias')
         setCategorias([
           { value: '', label: 'Todas' },
           ...categoriasIniciales.map((c, i) => ({ value: `seed-${i}`, label: c.nombre })),

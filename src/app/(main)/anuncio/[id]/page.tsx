@@ -12,6 +12,7 @@ import { obtenerAnuncioPorId, incrementarVistas, obtenerAnunciosAprobados } from
 import { etiquetasCondicion, type CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
 import { formatearPrecio } from '@/lib/dominio/formatear-precio'
 import { formatearFecha } from '@/lib/dominio/formatear-fecha'
+import { registrarError } from '@/lib/registrar-error'
 import type { Anuncio } from '@/shared/types/anuncio'
 
 export default function AnuncioDetallePage() {
@@ -28,7 +29,7 @@ export default function AnuncioDetallePage() {
       setAnuncio(data)
 
       if (data) {
-        incrementarVistas(id).catch(() => {})
+        incrementarVistas(id).catch((e) => registrarError(e, 'AnuncioPage:vistas'))
 
         const { anuncios } = await obtenerAnunciosAprobados(4)
         setSimilares(anuncios.filter((a) => a.id !== id).slice(0, 4))

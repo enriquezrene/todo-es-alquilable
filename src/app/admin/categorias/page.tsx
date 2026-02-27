@@ -11,6 +11,7 @@ import {
 import type { Categoria } from '@/shared/types/categoria'
 import Button from '@/shared/components/ui/Button'
 import Input from '@/shared/components/ui/Input'
+import { registrarError } from '@/lib/registrar-error'
 import Spinner from '@/shared/components/ui/Spinner'
 
 export default function CategoriasAdminPage() {
@@ -31,25 +32,40 @@ export default function CategoriasAdminPage() {
 
   const handleCreate = async () => {
     if (!newName.trim() || !newIcon.trim()) return
-    await crearCategoria(newName.trim(), newIcon.trim())
-    mostrarToast('Categoría creada', 'success')
-    setNewName('')
-    setNewIcon('')
-    const data = await obtenerCategorias()
-    setCategorias(data)
+    try {
+      await crearCategoria(newName.trim(), newIcon.trim())
+      mostrarToast('Categoría creada', 'success')
+      setNewName('')
+      setNewIcon('')
+      const data = await obtenerCategorias()
+      setCategorias(data)
+    } catch (e) {
+      registrarError(e, 'CategoriasPage:crear')
+      mostrarToast('Error al crear la categoría', 'error')
+    }
   }
 
   const handleToggle = async (cat: Categoria) => {
-    await actualizarCategoria(cat.id, { isActive: !cat.isActive })
-    setCategorias((prev) =>
-      prev.map((c) => (c.id === cat.id ? { ...c, isActive: !c.isActive } : c)),
-    )
+    try {
+      await actualizarCategoria(cat.id, { isActive: !cat.isActive })
+      setCategorias((prev) =>
+        prev.map((c) => (c.id === cat.id ? { ...c, isActive: !c.isActive } : c)),
+      )
+    } catch (e) {
+      registrarError(e, 'CategoriasPage:toggle')
+      mostrarToast('Error al actualizar la categoría', 'error')
+    }
   }
 
   const handleDelete = async (id: string) => {
-    await eliminarCategoria(id)
-    setCategorias((prev) => prev.filter((c) => c.id !== id))
-    mostrarToast('Categoría eliminada', 'info')
+    try {
+      await eliminarCategoria(id)
+      setCategorias((prev) => prev.filter((c) => c.id !== id))
+      mostrarToast('Categoría eliminada', 'info')
+    } catch (e) {
+      registrarError(e, 'CategoriasPage:eliminar')
+      mostrarToast('Error al eliminar la categoría', 'error')
+    }
   }
 
   if (loading) return <Spinner size="lg" />

@@ -11,6 +11,7 @@ import Spinner from '@/shared/components/ui/Spinner'
 import { buscarAnuncios } from '@/features/search/services/search-service'
 import { parseSearchParams } from '@/features/search/types'
 import type { Anuncio } from '@/shared/types/anuncio'
+import { registrarError } from '@/lib/registrar-error'
 import type { DocumentSnapshot } from '@/lib/firebase/firebase-firestore'
 
 function BuscarContent() {
@@ -48,7 +49,8 @@ function BuscarContent() {
         setAnuncios(result.anuncios)
         setLastDoc(result.lastDoc)
         setHasMore(result.hasMore)
-      } catch {
+      } catch (e) {
+        registrarError(e, 'BuscarPage:buscar')
         setAnuncios([])
       }
       setLoading(false)

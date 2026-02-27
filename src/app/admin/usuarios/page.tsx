@@ -8,6 +8,7 @@ import type { Usuario, RolUsuario } from '@/shared/types/usuario'
 import { formatearFecha } from '@/lib/dominio/formatear-fecha'
 import Select from '@/shared/components/ui/Select'
 import Spinner from '@/shared/components/ui/Spinner'
+import { registrarError } from '@/lib/registrar-error'
 import Badge from '@/shared/components/ui/Badge'
 
 const roleOptions = [
@@ -35,9 +36,14 @@ export default function UsuariosAdminPage() {
   }, [])
 
   const handleRoleChange = async (uid: string, newRole: RolUsuario) => {
-    await cambiarRolUsuario(uid, newRole)
-    setUsuarios((prev) => prev.map((u) => (u.uid === uid ? { ...u, role: newRole } : u)))
-    mostrarToast('Rol actualizado', 'success')
+    try {
+      await cambiarRolUsuario(uid, newRole)
+      setUsuarios((prev) => prev.map((u) => (u.uid === uid ? { ...u, role: newRole } : u)))
+      mostrarToast('Rol actualizado', 'success')
+    } catch (e) {
+      registrarError(e, 'UsuariosPage:cambiar-rol')
+      mostrarToast('Error al cambiar el rol', 'error')
+    }
   }
 
   if (loading) return <Spinner size="lg" />

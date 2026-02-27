@@ -20,23 +20,17 @@ let _auth: Auth
 let _db: Firestore
 let _storage: FirebaseStorage
 
-export const auth: Auth = new Proxy({} as Auth, {
-  get(_, prop) {
-    if (!_auth) _auth = getAuth(getApp())
-    return Reflect.get(_auth, prop)
-  },
-})
+export function getAuthInstance(): Auth {
+  if (!_auth) _auth = getAuth(getApp())
+  return _auth
+}
 
-export const db: Firestore = new Proxy({} as Firestore, {
-  get(_, prop) {
-    if (!_db) _db = getFirestore(getApp())
-    return Reflect.get(_db, prop)
-  },
-})
+export function getDbInstance(): Firestore {
+  if (!_db) _db = getFirestore(getApp())
+  return _db
+}
 
-export const storage: FirebaseStorage = new Proxy({} as FirebaseStorage, {
-  get(_, prop) {
-    if (!_storage) _storage = getStorage(getApp())
-    return Reflect.get(_storage, prop)
-  },
-})
+export function getStorageInstance(): FirebaseStorage {
+  if (!_storage) _storage = getStorage(getApp())
+  return _storage
+}

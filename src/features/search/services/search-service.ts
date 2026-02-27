@@ -6,7 +6,7 @@ import {
   orderBy,
   limit,
   startAfter,
-  db,
+  getDb,
   type DocumentSnapshot,
   type QueryConstraint,
 } from '@/lib/firebase/firebase-firestore'
@@ -57,7 +57,7 @@ export async function buscarAnuncios(
     constraints.push(startAfter(lastDoc))
   }
 
-  const q = query(collection(db, 'listings'), ...constraints)
+  const q = query(collection(getDb(), 'listings'), ...constraints)
   const snapshot = await getDocs(q)
   let anuncios = snapshot.docs.map(docToAnuncio)
 

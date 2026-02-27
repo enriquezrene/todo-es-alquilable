@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getDocs, collection, query, where, db } from '@/lib/firebase/firebase-firestore'
+import { getDocs, collection, query, where, getDb } from '@/lib/firebase/firebase-firestore'
 import { categoriasIniciales } from '@/lib/dominio/categorias-iniciales'
 import type { FormularioAnuncio } from '../types'
 import type { ErroresFormulario } from '@/features/auth/types'
+import { registrarError } from '@/lib/registrar-error'
 import Input from '@/shared/components/ui/Input'
 
 type Props = {
@@ -22,14 +23,15 @@ export default function StepCategoria({ datos, errores, onChange }: Props) {
   useEffect(() => {
     async function cargar() {
       try {
-        const q = query(collection(db, 'categories'), where('isActive', '==', true))
+        const q = query(collection(getDb(), 'categories'), where('isActive', '==', true))
         const snapshot = await getDocs(q)
         if (snapshot.empty) {
           setCategorias(categoriasIniciales.map((c, i) => ({ id: `seed-${i}`, name: c.nombre, icon: c.icono })))
         } else {
           setCategorias(snapshot.docs.map((doc) => ({ id: doc.id, name: doc.data().name, icon: doc.data().icon })))
         }
-      } catch {
+      } catch (e) {
+        registrarError(e, 'StepCategoria:cargar-categorias')
         setCategorias(categoriasIniciales.map((c, i) => ({ id: `seed-${i}`, name: c.nombre, icon: c.icono })))
       }
     }

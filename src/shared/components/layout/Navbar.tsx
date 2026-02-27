@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/shared/providers/AuthProvider'
-import { signOut } from 'firebase/auth'
-import { auth } from '@/lib/firebase/firebase-config'
+import { cerrarSesion } from '@/lib/firebase/firebase-auth'
 import Container from './Container'
 import Button from '@/shared/components/ui/Button'
 import MobileMenu from './MobileMenu'
@@ -14,7 +13,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
-    await signOut(auth)
+    await cerrarSesion()
   }
 
   const isAdmin = role === 'admin' || role === 'super_admin' || role === 'moderator'

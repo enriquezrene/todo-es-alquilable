@@ -7,18 +7,18 @@ import {
   type User,
   type Unsubscribe,
 } from 'firebase/auth'
-import { auth } from './firebase-config'
+import { getAuthInstance } from './firebase-config'
 
 export async function registrarConEmail(email: string, password: string) {
-  return createUserWithEmailAndPassword(auth, email, password)
+  return createUserWithEmailAndPassword(getAuthInstance(), email, password)
 }
 
 export async function iniciarSesionConEmail(email: string, password: string) {
-  return signInWithEmailAndPassword(auth, email, password)
+  return signInWithEmailAndPassword(getAuthInstance(), email, password)
 }
 
 export async function cerrarSesion() {
-  return firebaseSignOut(auth)
+  return firebaseSignOut(getAuthInstance())
 }
 
 export async function actualizarPerfil(user: User, data: { displayName?: string; photoURL?: string }) {
@@ -26,5 +26,5 @@ export async function actualizarPerfil(user: User, data: { displayName?: string;
 }
 
 export function observarEstadoAuth(callback: (user: User | null) => void): Unsubscribe {
-  return onAuthStateChanged(auth, callback)
+  return onAuthStateChanged(getAuthInstance(), callback)
 }

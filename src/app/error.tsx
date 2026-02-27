@@ -1,14 +1,20 @@
 'use client'
 
+import { useEffect } from 'react'
 import Container from '@/shared/components/layout/Container'
 import Button from '@/shared/components/ui/Button'
+import { registrarError } from '@/lib/registrar-error'
 
 export default function Error({
+  error,
   reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    registrarError(error, 'ErrorBoundary')
+  }, [error])
   return (
     <Container className="flex flex-col items-center justify-center py-24">
       <h1 className="text-4xl font-bold text-gray-300">Error</h1>

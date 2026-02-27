@@ -13,7 +13,7 @@ import {
   startAfter,
   serverTimestamp,
   increment,
-  db,
+  getDb,
   type DocumentSnapshot,
   type QueryConstraint,
 } from '@/lib/firebase/firebase-firestore'
@@ -67,7 +67,7 @@ export type CrearAnuncioData = {
 }
 
 export async function crearAnuncio(data: CrearAnuncioData): Promise<string> {
-  const docRef = doc(collection(db, 'listings'))
+  const docRef = doc(collection(getDb(), 'listings'))
 
   await setDoc(docRef, {
     ...data,
@@ -86,7 +86,7 @@ export async function crearAnuncio(data: CrearAnuncioData): Promise<string> {
 }
 
 export async function obtenerAnuncioPorId(id: string): Promise<Anuncio | null> {
-  const docSnap = await getDoc(doc(db, 'listings', id))
+  const docSnap = await getDoc(doc(getDb(), 'listings', id))
   return docToAnuncio(docSnap)
 }
 
@@ -102,7 +102,7 @@ export async function obtenerAnunciosAprobados(
 
   if (lastDoc) constraints.push(startAfter(lastDoc))
 
-  const q = query(collection(db, 'listings'), ...constraints)
+  const q = query(collection(getDb(), 'listings'), ...constraints)
   const snapshot = await getDocs(q)
   const anuncios = snapshot.docs.map(docToAnuncio).filter(Boolean) as Anuncio[]
   const last = snapshot.docs[snapshot.docs.length - 1] || null
@@ -121,7 +121,7 @@ export async function obtenerAnunciosPorUsuario(
 
   if (status) constraints.push(where('status', '==', status))
 
-  const q = query(collection(db, 'listings'), ...constraints)
+  const q = query(collection(getDb(), 'listings'), ...constraints)
   const snapshot = await getDocs(q)
   return snapshot.docs.map(docToAnuncio).filter(Boolean) as Anuncio[]
 }
@@ -130,18 +130,18 @@ export async function actualizarAnuncio(
   id: string,
   data: Partial<Omit<Anuncio, 'id' | 'createdAt'>>,
 ): Promise<void> {
-  await updateDoc(doc(db, 'listings', id), {
+  await updateDoc(doc(getDb(), 'listings', id), {
     ...data,
     updatedAt: serverTimestamp(),
   })
 }
 
 export async function eliminarAnuncio(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'listings', id))
+  await deleteDoc(doc(getDb(), 'listings', id))
 }
 
 export async function incrementarVistas(id: string): Promise<void> {
-  await updateDoc(doc(db, 'listings', id), {
+  await updateDoc(doc(getDb(), 'listings', id), {
     viewCount: increment(1),
   })
 }

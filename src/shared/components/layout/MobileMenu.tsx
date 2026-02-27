@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { useAuth } from '@/shared/providers/AuthProvider'
-import { signOut } from 'firebase/auth'
-import { auth } from '@/lib/firebase/firebase-config'
+import { cerrarSesion } from '@/lib/firebase/firebase-auth'
 import Button from '@/shared/components/ui/Button'
 
 type MobileMenuProps = {
@@ -16,7 +15,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const isAdmin = role === 'admin' || role === 'super_admin' || role === 'moderator'
 
   const handleSignOut = async () => {
-    await signOut(auth)
+    await cerrarSesion()
     onClose()
   }
 

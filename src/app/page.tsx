@@ -10,6 +10,7 @@ import Button from '@/shared/components/ui/Button'
 import { obtenerAnunciosAprobados } from '@/features/listings/services/listing-service'
 import { categoriasIniciales } from '@/lib/dominio/categorias-iniciales'
 import { obtenerNombresProvincias } from '@/lib/dominio/provincias-ecuador'
+import { registrarError } from '@/lib/registrar-error'
 import type { Anuncio } from '@/shared/types/anuncio'
 
 export default function HomePage() {
@@ -22,7 +23,8 @@ export default function HomePage() {
       try {
         const { anuncios } = await obtenerAnunciosAprobados(8)
         setRecientes(anuncios)
-      } catch {
+      } catch (e) {
+        registrarError(e, 'HomePage:cargar-recientes')
         setRecientes([])
       }
       setLoading(false)
