@@ -2,9 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { registrarConEmail, actualizarPerfil } from '@/lib/firebase/firebase-auth'
-import { setDoc, doc, collection, serverTimestamp, getDb } from '@/lib/firebase/firebase-firestore'
+import { setDoc, doc, collection, getDocs, deleteDoc, serverTimestamp, getDb } from '@/lib/firebase/firebase-firestore'
 import { categoriasIniciales } from '@/lib/dominio/categorias-iniciales'
 import { provinciasEcuador } from '@/lib/dominio/provincias-ecuador'
+import { imagenesPorCategoria } from './imagenes-seed'
 
 type LogEntry = {
   message: string
@@ -166,6 +167,13 @@ const listingsPorCategoria: Record<string, Array<{ title: string; description: s
   ],
 }
 
+const obtenerImagenes = (categoriaNombre: string, listingIndex: number): string[] => {
+  const pool = imagenesPorCategoria[categoriaNombre] ?? []
+  if (pool.length === 0) return []
+  const i = listingIndex * 2
+  return [pool[i % pool.length], pool[(i + 1) % pool.length]]
+}
+
 const pickRandom = <T,>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)]
 
 const pickRandomProvince = () => {
@@ -252,7 +260,30 @@ export default function SeedPage() {
       }
     }
 
-    // Step 2: Create categories
+    // Step 2: Delete existing data
+    addLog('Eliminando datos anteriores...')
+    try {
+      const listingsSnap = await getDocs(collection(db, 'listings'))
+      let deletedListings = 0
+      for (const docSnap of listingsSnap.docs) {
+        await deleteDoc(doc(db, 'listings', docSnap.id))
+        deletedListings++
+      }
+      addLog(`  ${deletedListings} anuncios eliminados`, 'success')
+
+      const catsSnap = await getDocs(collection(db, 'categories'))
+      let deletedCats = 0
+      for (const docSnap of catsSnap.docs) {
+        await deleteDoc(doc(db, 'categories', docSnap.id))
+        deletedCats++
+      }
+      addLog(`  ${deletedCats} categorias eliminadas`, 'success')
+    } catch (error: unknown) {
+      const firebaseError = error as { message?: string }
+      addLog(`Error eliminando datos: ${firebaseError.message}`, 'error')
+    }
+
+    // Step 3: Create categories
     addLog('Creando categorias...')
     const categoryIds: Record<string, string> = {}
 
@@ -276,7 +307,7 @@ export default function SeedPage() {
       }
     }
 
-    // Step 3: Create listings
+    // Step 4: Create listings
     addLog('Creando anuncios de alquiler...')
     let totalCreated = 0
 
@@ -293,10 +324,12 @@ export default function SeedPage() {
         continue
       }
 
-      for (const listing of listings) {
+      for (let li = 0; li < listings.length; li++) {
+        const listing = listings[li]
         try {
           const listingRef = doc(collection(db, 'listings'))
           const province = pickRandomProvince()
+          const images = obtenerImagenes(cat.nombre, li)
 
           const listingData = {
             title: listing.title,
@@ -308,8 +341,8 @@ export default function SeedPage() {
             price: listing.price,
             priceUnit: listing.priceUnit,
             province,
-            images: [],
-            thumbnails: [],
+            images,
+            thumbnails: images,
             ownerId: adminUid,
             ownerName: ADMIN_NAME,
             ownerPhone: ADMIN_PHONE,
