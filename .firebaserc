@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "todo-es-alquilable",
+    "staging": "todo-es-alquilable-staging"
+  }
+}

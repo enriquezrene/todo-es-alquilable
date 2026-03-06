@@ -14,16 +14,18 @@ export function validarPasoCategoria(datos: FormularioAnuncio): ErroresFormulari
 export function validarPasoFotos(datos: FormularioAnuncio): ErroresFormulario {
   const errores: ErroresFormulario = {}
 
-  if (datos.images.length === 0) {
+  if (datos.imageSlots.length === 0) {
     errores.images = 'Agrega al menos una foto'
   }
 
-  if (datos.images.length > 8) {
-    errores.images = 'Máximo 8 fotos permitidas'
+  if (datos.imageSlots.length > 3) {
+    errores.images = 'Máximo 3 fotos permitidas'
   }
 
   const maxSize = 5 * 1024 * 1024
-  const imagenGrande = datos.images.find((img) => img.size > maxSize)
+  const imagenGrande = datos.imageSlots.find(
+    (slot) => slot.tipo === 'nueva' && slot.file.size > maxSize
+  )
   if (imagenGrande) {
     errores.images = 'Cada imagen debe ser menor a 5MB'
   }

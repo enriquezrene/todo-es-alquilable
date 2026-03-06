@@ -1,7 +1,7 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { getStorageInstance } from './firebase-config'
 
-export async function subirArchivo(path: string, file: File): Promise<string> {
+export async function subirArchivo(path: string, file: File | Blob): Promise<string> {
   const storageRef = ref(getStorageInstance(), path)
   await uploadBytes(storageRef, file)
   return getDownloadURL(storageRef)

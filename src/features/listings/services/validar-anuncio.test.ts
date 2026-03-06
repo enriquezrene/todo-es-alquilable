@@ -17,9 +17,14 @@ const formularioBase: FormularioAnuncio = {
   price: '15',
   priceUnit: 'dia',
   province: 'Pichincha',
-  images: [],
-  imagesPreviews: [],
+  imageSlots: [],
 }
+
+const crearSlotNuevo = (file?: File) => ({
+  tipo: 'nueva' as const,
+  file: file || new File([''], 'test.jpg'),
+  preview: '',
+})
 
 describe('validarPasoCategoria', () => {
   it('pasa con categoría seleccionada', () => {
@@ -43,20 +48,28 @@ describe('validarPasoFotos', () => {
   })
 
   it('pasa con fotos', () => {
-    const datos = { ...formularioBase, images: [new File([''], 'test.jpg')] }
+    const datos = { ...formularioBase, imageSlots: [crearSlotNuevo()] }
     expect(Object.keys(validarPasoFotos(datos))).toHaveLength(0)
   })
 
-  it('falla con más de 8 fotos', () => {
-    const images = Array.from({ length: 9 }, () => new File([''], 'test.jpg'))
-    const datos = { ...formularioBase, images }
+  it('falla con más de 3 fotos', () => {
+    const imageSlots = Array.from({ length: 4 }, () => crearSlotNuevo())
+    const datos = { ...formularioBase, imageSlots }
     expect(validarPasoFotos(datos).images).toBeTruthy()
   })
 
   it('falla con imagen mayor a 5MB', () => {
     const bigFile = new File([new ArrayBuffer(6 * 1024 * 1024)], 'big.jpg')
-    const datos = { ...formularioBase, images: [bigFile] }
+    const datos = { ...formularioBase, imageSlots: [crearSlotNuevo(bigFile)] }
     expect(validarPasoFotos(datos).images).toBeTruthy()
+  })
+
+  it('no valida tamaño de slots existentes', () => {
+    const datos = {
+      ...formularioBase,
+      imageSlots: [{ tipo: 'existente' as const, url: 'https://example.com/img.jpg', thumbnail: 'https://example.com/thumb.jpg' }],
+    }
+    expect(Object.keys(validarPasoFotos(datos))).toHaveLength(0)
   })
 })
 

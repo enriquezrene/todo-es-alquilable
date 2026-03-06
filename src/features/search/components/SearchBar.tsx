@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 type SearchBarProps = {
   initialValue?: string
@@ -16,25 +16,13 @@ export default function SearchBar({
   className = '',
 }: SearchBarProps) {
   const [value, setValue] = useState(initialValue)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
 
   useEffect(() => {
     setValue(initialValue)
   }, [initialValue])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setValue(newValue)
-
-    clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      onSearch(newValue)
-    }, 300)
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    clearTimeout(timerRef.current)
     onSearch(value)
   }
 
@@ -43,9 +31,9 @@ export default function SearchBar({
       <input
         type="text"
         value={value}
-        onChange={handleChange}
+        onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-sm shadow-sm transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-sm text-gray-900 shadow-sm transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <svg
         className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"

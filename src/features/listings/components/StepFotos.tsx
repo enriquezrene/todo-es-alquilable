@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import type { FormularioAnuncio } from '../types'
+import type { FormularioAnuncio, ImagenSlot } from '../types'
 import type { ErroresFormulario } from '@/features/auth/types'
 
 type Props = {
@@ -16,26 +16,31 @@ export default function StepFotos({ datos, errores, onChange }: Props) {
       if (!files) return
 
       const nuevas = Array.from(files).filter((f) => f.type.startsWith('image/'))
-      const total = datos.images.length + nuevas.length
+      const total = datos.imageSlots.length + nuevas.length
 
-      if (total > 8) {
+      if (total > 3) {
         return
       }
 
-      const previews = nuevas.map((f) => URL.createObjectURL(f))
+      const nuevosSlots: ImagenSlot[] = nuevas.map((f) => ({
+        tipo: 'nueva',
+        file: f,
+        preview: URL.createObjectURL(f),
+      }))
       onChange({
-        images: [...datos.images, ...nuevas],
-        imagesPreviews: [...datos.imagesPreviews, ...previews],
+        imageSlots: [...datos.imageSlots, ...nuevosSlots],
       })
     },
-    [datos.images, datos.imagesPreviews, onChange],
+    [datos.imageSlots, onChange],
   )
 
   const eliminar = (index: number) => {
-    URL.revokeObjectURL(datos.imagesPreviews[index])
+    const slot = datos.imageSlots[index]
+    if (slot.tipo === 'nueva') {
+      URL.revokeObjectURL(slot.preview)
+    }
     onChange({
-      images: datos.images.filter((_, i) => i !== index),
-      imagesPreviews: datos.imagesPreviews.filter((_, i) => i !== index),
+      imageSlots: datos.imageSlots.filter((_, i) => i !== index),
     })
   }
 
@@ -44,11 +49,14 @@ export default function StepFotos({ datos, errores, onChange }: Props) {
     handleFiles(e.dataTransfer.files)
   }
 
+  const getPreviewUrl = (slot: ImagenSlot): string =>
+    slot.tipo === 'nueva' ? slot.preview : slot.thumbnail || slot.url
+
   return (
     <div>
       <h2 className="mb-4 text-lg font-semibold">Agrega fotos de tu artículo</h2>
       <p className="mb-4 text-sm text-gray-500">
-        Mínimo 1, máximo 8 fotos. Cada una menor a 5MB.
+        Mínimo 1, máximo 3 fotos. Cada una menor a 5MB.
       </p>
 
       <div
@@ -76,11 +84,11 @@ export default function StepFotos({ datos, errores, onChange }: Props) {
         onChange={(e) => handleFiles(e.target.files)}
       />
 
-      {datos.imagesPreviews.length > 0 && (
+      {datos.imageSlots.length > 0 && (
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {datos.imagesPreviews.map((preview, i) => (
+          {datos.imageSlots.map((slot, i) => (
             <div key={i} className="group relative aspect-square overflow-hidden rounded-lg">
-              <img src={preview} alt={`Foto ${i + 1}`} className="h-full w-full object-cover" />
+              <img src={getPreviewUrl(slot)} alt={`Foto ${i + 1}`} className="h-full w-full object-cover" />
               <button
                 onClick={() => eliminar(i)}
                 className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"

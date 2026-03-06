@@ -7,6 +7,8 @@ import { categoriasIniciales } from '@/lib/dominio/categorias-iniciales'
 import { provinciasEcuador } from '@/lib/dominio/provincias-ecuador'
 import { imagenesPorCategoria } from './imagenes-seed'
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 type LogEntry = {
   message: string
   type: 'info' | 'success' | 'error'
@@ -174,10 +176,11 @@ const obtenerImagenes = (categoriaNombre: string, listingIndex: number): string[
   return [pool[i % pool.length], pool[(i + 1) % pool.length]]
 }
 
-const pickRandom = <T,>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)]
-
-const pickRandomProvince = () => {
-  const provincia = pickRandom(provinciasEcuador)
+// Distribute provinces deterministically so every province gets listings
+let provinceCounter = 0
+const getNextProvince = (): string => {
+  const provincia = provinciasEcuador[provinceCounter % provinciasEcuador.length]
+  provinceCounter++
   return provincia.nombre
 }
 
@@ -197,6 +200,7 @@ export default function SeedPage() {
 
     const db = getDb()
     let adminUid = ''
+    provinceCounter = 0
 
     // Step 1: Create admin user
     addLog('Creando usuario administrador...')
@@ -266,16 +270,26 @@ export default function SeedPage() {
       const listingsSnap = await getDocs(collection(db, 'listings'))
       let deletedListings = 0
       for (const docSnap of listingsSnap.docs) {
-        await deleteDoc(doc(db, 'listings', docSnap.id))
-        deletedListings++
+        try {
+          await deleteDoc(doc(db, 'listings', docSnap.id))
+          deletedListings++
+        } catch {
+          // Skip individual delete failures
+        }
+        await delay(50)
       }
       addLog(`  ${deletedListings} anuncios eliminados`, 'success')
 
       const catsSnap = await getDocs(collection(db, 'categories'))
       let deletedCats = 0
       for (const docSnap of catsSnap.docs) {
-        await deleteDoc(doc(db, 'categories', docSnap.id))
-        deletedCats++
+        try {
+          await deleteDoc(doc(db, 'categories', docSnap.id))
+          deletedCats++
+        } catch {
+          // Skip individual delete failures
+        }
+        await delay(50)
       }
       addLog(`  ${deletedCats} categorias eliminadas`, 'success')
     } catch (error: unknown) {
@@ -305,6 +319,7 @@ export default function SeedPage() {
         const firebaseError = error as { message?: string }
         addLog(`  Error creando categoria ${cat.nombre}: ${firebaseError.message}`, 'error')
       }
+      await delay(100)
     }
 
     // Step 4: Create listings
@@ -326,42 +341,52 @@ export default function SeedPage() {
 
       for (let li = 0; li < listings.length; li++) {
         const listing = listings[li]
-        try {
-          const listingRef = doc(collection(db, 'listings'))
-          const province = pickRandomProvince()
-          const images = obtenerImagenes(cat.nombre, li)
+        const province = getNextProvince()
+        const images = obtenerImagenes(cat.nombre, li)
 
-          const listingData = {
-            title: listing.title,
-            titleLower: listing.title.toLowerCase(),
-            description: listing.description,
-            categoryId: catId,
-            categoryName: cat.nombre,
-            condition: listing.condition,
-            price: listing.price,
-            priceUnit: listing.priceUnit,
-            province,
-            images,
-            thumbnails: images,
-            ownerId: adminUid,
-            ownerName: ADMIN_NAME,
-            ownerPhone: ADMIN_PHONE,
-            ownerPhotoURL: null,
-            status: 'aprobado',
-            rejectionReason: null,
-            moderatorId: adminUid,
-            moderatedAt: serverTimestamp(),
-            viewCount: Math.floor(Math.random() * 150),
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          }
-
-          await setDoc(listingRef, listingData)
-          totalCreated++
-        } catch (error: unknown) {
-          const firebaseError = error as { message?: string }
-          addLog(`  Error creando anuncio "${listing.title}": ${firebaseError.message}`, 'error')
+        const listingData = {
+          title: listing.title,
+          titleLower: listing.title.toLowerCase(),
+          description: listing.description,
+          categoryId: catId,
+          categoryName: cat.nombre,
+          condition: listing.condition,
+          price: listing.price,
+          priceUnit: listing.priceUnit,
+          province,
+          images,
+          thumbnails: images,
+          ownerId: adminUid,
+          ownerName: ADMIN_NAME,
+          ownerPhone: ADMIN_PHONE,
+          ownerPhotoURL: null,
+          status: 'aprobado',
+          rejectionReason: null,
+          moderatorId: adminUid,
+          moderatedAt: serverTimestamp(),
+          viewCount: Math.floor(Math.random() * 150),
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
         }
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            const listingRef = doc(collection(db, 'listings'))
+            await setDoc(listingRef, listingData)
+            totalCreated++
+            break
+          } catch (error: unknown) {
+            if (attempt === 0) {
+              await delay(500)
+            } else {
+              const firebaseError = error as { message?: string }
+              addLog(`  Error creando anuncio "${listing.title}": ${firebaseError.message}`, 'error')
+            }
+          }
+        }
+
+        // Small delay to avoid overwhelming Firestore rule evaluations
+        await delay(100)
       }
 
       addLog(`  ${cat.icono} ${cat.nombre}: 10 anuncios creados`, 'success')

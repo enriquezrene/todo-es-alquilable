@@ -34,3 +34,4 @@ export function getStorageInstance(): FirebaseStorage {
   if (!_storage) _storage = getStorage(getApp())
   return _storage
 }
+

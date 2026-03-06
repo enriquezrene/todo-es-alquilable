@@ -4,3 +4,4 @@ admin.initializeApp()
 
 export { onUserCreated } from './auth-triggers'
 export { setUserRole } from './set-custom-claims'
+export { bootstrapAdmin } from './bootstrap-admin'

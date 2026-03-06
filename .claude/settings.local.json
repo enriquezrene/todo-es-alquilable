@@ -14,7 +14,15 @@
       "WebFetch(domain:johanbostrom.se)",
       "WebFetch(domain:unsplash.com)",
       "Bash(npm test:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(npx firebase-tools:*)",
+      "Bash(cat:*)",
+      "Bash(npx next:*)",
+      "Bash(node:*)",
+      "Bash(ls:*)",
+      "Bash(source:*)",
+      "Bash(firebase functions:artifacts:setpolicy:*)"
     ]
   }
 }

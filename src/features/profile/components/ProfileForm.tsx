@@ -7,6 +7,7 @@ import { obtenerPerfil, actualizarPerfil } from '@/features/profile/services/pro
 import { formatearTelefonoEcuador } from '@/lib/dominio/validar-telefono-ecuador'
 import { obtenerNombresProvincias, obtenerCiudadesPorProvincia } from '@/lib/dominio/provincias-ecuador'
 import type { FormularioPerfil } from '../types'
+import { registrarError } from '@/lib/registrar-error'
 import Input from '@/shared/components/ui/Input'
 import Select from '@/shared/components/ui/Select'
 import Button from '@/shared/components/ui/Button'
@@ -42,17 +43,22 @@ export default function ProfileForm() {
     if (!user) return
 
     async function cargar() {
-      const perfil = await obtenerPerfil(user!.uid)
-      if (perfil) {
-        setDatos({
-          displayName: perfil.displayName,
-          phone: perfil.phone,
-          province: perfil.province,
-          city: perfil.city,
-          address: perfil.address,
-        })
+      try {
+        const perfil = await obtenerPerfil(user!.uid)
+        if (perfil) {
+          setDatos({
+            displayName: perfil.displayName,
+            phone: perfil.phone,
+            province: perfil.province,
+            city: perfil.city,
+            address: perfil.address,
+          })
+        }
+      } catch (e) {
+        registrarError(e, 'ProfileForm:cargar')
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     cargar()
   }, [user])
@@ -77,7 +83,8 @@ export default function ProfileForm() {
         phone: formatearTelefonoEcuador(datos.phone),
       })
       mostrarToast('Perfil actualizado', 'success')
-    } catch {
+    } catch (error) {
+      registrarError(error, 'ProfileForm:actualizar')
       mostrarToast('Error al actualizar el perfil', 'error')
     } finally {
       setSaving(false)

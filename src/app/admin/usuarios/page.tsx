@@ -28,9 +28,14 @@ export default function UsuariosAdminPage() {
 
   useEffect(() => {
     async function cargar() {
-      const data = await obtenerUsuarios()
-      setUsuarios(data)
-      setLoading(false)
+      try {
+        const data = await obtenerUsuarios()
+        setUsuarios(data)
+      } catch (e) {
+        registrarError(e, 'UsuariosPage:cargar')
+      } finally {
+        setLoading(false)
+      }
     }
     cargar()
   }, [])

@@ -60,19 +60,22 @@ export type CrearAnuncioData = {
   priceUnit: string
   province: string
   images: string[]
+  thumbnails: string[]
   ownerId: string
   ownerName: string
   ownerPhone: string
   ownerPhotoURL: string | null
 }
 
-export async function crearAnuncio(data: CrearAnuncioData): Promise<string> {
-  const docRef = doc(collection(getDb(), 'listings'))
+export async function crearAnuncio(data: CrearAnuncioData, id?: string): Promise<string> {
+  const docRef = id
+    ? doc(getDb(), 'listings', id)
+    : doc(collection(getDb(), 'listings'))
 
   await setDoc(docRef, {
     ...data,
     titleLower: data.title.toLowerCase(),
-    thumbnails: [],
+    thumbnails: data.thumbnails,
     status: 'pendiente',
     rejectionReason: null,
     moderatorId: null,
@@ -132,6 +135,29 @@ export async function actualizarAnuncio(
 ): Promise<void> {
   await updateDoc(doc(getDb(), 'listings', id), {
     ...data,
+    updatedAt: serverTimestamp(),
+  })
+}
+
+export type ReenviarAnuncioData = {
+  title: string
+  description: string
+  categoryId: string
+  categoryName: string
+  condition: string
+  price: number
+  priceUnit: string
+  province: string
+  images: string[]
+  thumbnails: string[]
+}
+
+export async function reenviarAnuncio(id: string, data: ReenviarAnuncioData): Promise<void> {
+  await updateDoc(doc(getDb(), 'listings', id), {
+    ...data,
+    titleLower: data.title.toLowerCase(),
+    status: 'pendiente',
+    rejectionReason: null,
     updatedAt: serverTimestamp(),
   })
 }

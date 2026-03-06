@@ -12,6 +12,7 @@ import Button from '@/shared/components/ui/Button'
 import Input from '@/shared/components/ui/Input'
 import Select from '@/shared/components/ui/Select'
 import { useToast } from '@/shared/providers/ToastProvider'
+import { registrarError } from '@/lib/registrar-error'
 
 export default function RegisterForm() {
   const router = useRouter()
@@ -75,6 +76,7 @@ export default function RegisterForm() {
       if (message.includes('email-already-in-use')) {
         mostrarToast('Este email ya está registrado', 'error')
       } else {
+        registrarError(error, 'RegisterForm:registrar')
         mostrarToast(message, 'error')
       }
     } finally {

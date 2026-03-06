@@ -9,6 +9,7 @@ import {
   rechazarAnuncio,
   solicitarCambios,
 } from '@/features/admin/services/moderation-service'
+import { actualizarAnuncio } from '@/features/listings/services/listing-service'
 import ListingReviewCard from '@/features/admin/components/ListingReviewCard'
 import Spinner from '@/shared/components/ui/Spinner'
 import EmptyState from '@/shared/components/feedback/EmptyState'
@@ -23,9 +24,14 @@ export default function PendientesPage() {
 
   useEffect(() => {
     async function cargar() {
-      const data = await obtenerAnunciosPendientes()
-      setAnuncios(data)
-      setLoading(false)
+      try {
+        const data = await obtenerAnunciosPendientes()
+        setAnuncios(data)
+      } catch (e) {
+        registrarError(e, 'PendientesPage:cargar')
+      } finally {
+        setLoading(false)
+      }
     }
     cargar()
   }, [])
@@ -70,6 +76,22 @@ export default function PendientesPage() {
     }
   }
 
+  const handleEditAndApprove = async (id: string, data: Partial<Anuncio>) => {
+    if (!user) return
+    try {
+      if (Object.keys(data).length > 0) {
+        if (data.title) data.titleLower = data.title.toLowerCase()
+        await actualizarAnuncio(id, data)
+      }
+      await aprobarAnuncio(id, user.uid)
+      removeFromList(id)
+      mostrarToast('Anuncio editado y aprobado', 'success')
+    } catch (e) {
+      registrarError(e, 'PendientesPage:editar-aprobar')
+      mostrarToast('Error al editar y aprobar', 'error')
+    }
+  }
+
   if (loading) return <Spinner size="lg" />
 
   return (
@@ -89,6 +111,7 @@ export default function PendientesPage() {
               onApprove={handleApprove}
               onReject={handleReject}
               onRequestChanges={handleRequestChanges}
+              onEditAndApprove={handleEditAndApprove}
             />
           ))}
         </div>

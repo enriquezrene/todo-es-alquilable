@@ -25,17 +25,21 @@ export default function AnuncioDetallePage() {
   useEffect(() => {
     async function cargar() {
       setLoading(true)
-      const data = await obtenerAnuncioPorId(id)
-      setAnuncio(data)
+      try {
+        const data = await obtenerAnuncioPorId(id)
+        setAnuncio(data)
 
-      if (data) {
-        incrementarVistas(id).catch((e) => registrarError(e, 'AnuncioPage:vistas'))
+        if (data) {
+          incrementarVistas(id).catch((e) => registrarError(e, 'AnuncioPage:vistas'))
 
-        const { anuncios } = await obtenerAnunciosAprobados(4)
-        setSimilares(anuncios.filter((a) => a.id !== id).slice(0, 4))
+          const { anuncios } = await obtenerAnunciosAprobados(4)
+          setSimilares(anuncios.filter((a) => a.id !== id).slice(0, 4))
+        }
+      } catch (e) {
+        registrarError(e, 'AnuncioPage:cargar')
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
     cargar()
   }, [id])

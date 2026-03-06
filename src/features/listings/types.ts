@@ -1,6 +1,10 @@
 import type { CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
 import type { UnidadPrecio } from '@/lib/dominio/unidades-precio'
 
+export type ImagenSlot =
+  | { tipo: 'existente'; url: string; thumbnail: string }
+  | { tipo: 'nueva'; file: File; preview: string }
+
 export type FormularioAnuncio = {
   title: string
   description: string
@@ -11,8 +15,7 @@ export type FormularioAnuncio = {
   price: string
   priceUnit: UnidadPrecio | ''
   province: string
-  images: File[]
-  imagesPreviews: string[]
+  imageSlots: ImagenSlot[]
 }
 
 export type PasoFormulario = 'categoria' | 'fotos' | 'detalles' | 'precio' | 'revision'

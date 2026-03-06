@@ -14,6 +14,42 @@ import type { Anuncio } from '@/shared/types/anuncio'
 import type { SearchFilters } from '../types'
 
 const PAGE_SIZE = 20
+const FUZZY_THRESHOLD = 0.6
+
+function bigrams(str: string): Set<string> {
+  const s = str.toLowerCase()
+  const set = new Set<string>()
+  for (let i = 0; i < s.length - 1; i++) {
+    set.add(s.slice(i, i + 2))
+  }
+  return set
+}
+
+function similarity(a: string, b: string): number {
+  const bigramsA = bigrams(a)
+  const bigramsB = bigrams(b)
+  if (bigramsA.size === 0 && bigramsB.size === 0) return 1
+  if (bigramsA.size === 0 || bigramsB.size === 0) return 0
+  let intersection = 0
+  bigramsA.forEach((bg) => { if (bigramsB.has(bg)) intersection++ })
+  return (2 * intersection) / (bigramsA.size + bigramsB.size)
+}
+
+function fuzzyMatch(text: string, query: string): boolean {
+  const textLower = text.toLowerCase()
+  const queryLower = query.toLowerCase()
+
+  // Exact substring match is always a hit
+  if (textLower.includes(queryLower)) return true
+
+  // Check each word in the text against each query term
+  const queryTerms = queryLower.split(/\s+/).filter(Boolean)
+  const textWords = textLower.split(/\s+/).filter(Boolean)
+
+  return queryTerms.every((term) =>
+    textWords.some((word) => word.length >= 3 && similarity(word, term) >= FUZZY_THRESHOLD),
+  )
+}
 
 function docToAnuncio(docSnap: DocumentSnapshot): Anuncio {
   const data = docSnap.data()!
@@ -63,11 +99,10 @@ export async function buscarAnuncios(
 
   // Client-side filters for fields not supported by compound queries
   if (filters.query) {
-    const queryLower = filters.query.toLowerCase()
     anuncios = anuncios.filter(
       (a) =>
-        a.titleLower.includes(queryLower) ||
-        a.description.toLowerCase().includes(queryLower),
+        fuzzyMatch(a.title, filters.query) ||
+        fuzzyMatch(a.description, filters.query),
     )
   }
 

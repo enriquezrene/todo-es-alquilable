@@ -8,12 +8,23 @@ import type { EstadoAnuncio } from '@/lib/dominio/estados-anuncio'
 import Container from '@/shared/components/layout/Container'
 import AuthGuard from '@/features/auth/components/AuthGuard'
 import ListingGrid from '@/features/listings/components/ListingGrid'
+import CambiosRequeridosCard from '@/features/listings/components/CambiosRequeridosCard'
+import { SkeletonCard } from '@/shared/components/ui/Skeleton'
+import EmptyState from '@/shared/components/feedback/EmptyState'
 
 const tabs: { status: EstadoAnuncio; label: string; variant: 'success' | 'warning' | 'error' }[] = [
   { status: 'aprobado', label: 'Activos', variant: 'success' },
   { status: 'pendiente', label: 'Pendientes', variant: 'warning' },
+  { status: 'cambios_requeridos', label: 'Cambios requeridos', variant: 'warning' },
   { status: 'rechazado', label: 'Rechazados', variant: 'error' },
 ]
+
+const emptyMessages: Record<EstadoAnuncio, string> = {
+  aprobado: 'No tienes anuncios activos',
+  pendiente: 'No tienes anuncios pendientes',
+  cambios_requeridos: 'No tienes anuncios con cambios requeridos',
+  rechazado: 'No tienes anuncios rechazados',
+}
 
 export default function MisAnunciosPage() {
   const { user } = useAuth()
@@ -38,7 +49,7 @@ export default function MisAnunciosPage() {
       <Container className="py-8">
         <h1 className="mb-6 text-2xl font-bold text-gray-900">Mis anuncios</h1>
 
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           {tabs.map((tab) => (
             <button
               key={tab.status}
@@ -54,11 +65,29 @@ export default function MisAnunciosPage() {
           ))}
         </div>
 
-        <ListingGrid
-          anuncios={anuncios}
-          loading={loading}
-          emptyMessage={`No tienes anuncios ${tabActiva === 'aprobado' ? 'activos' : tabActiva === 'pendiente' ? 'pendientes' : 'rechazados'}`}
-        />
+        {tabActiva === 'cambios_requeridos' ? (
+          loading ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 4 }, (_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : anuncios.length === 0 ? (
+            <EmptyState title={emptyMessages[tabActiva]} description="Intenta con otros filtros o vuelve más tarde." />
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {anuncios.map((anuncio) => (
+                <CambiosRequeridosCard key={anuncio.id} anuncio={anuncio} />
+              ))}
+            </div>
+          )
+        ) : (
+          <ListingGrid
+            anuncios={anuncios}
+            loading={loading}
+            emptyMessage={emptyMessages[tabActiva]}
+          />
+        )}
       </Container>
     </AuthGuard>
   )

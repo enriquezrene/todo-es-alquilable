@@ -61,10 +61,14 @@ function BuscarContent() {
 
   const cargarMas = async () => {
     if (!lastDoc) return
-    const result = await buscarAnuncios(filters, lastDoc)
-    setAnuncios((prev) => [...prev, ...result.anuncios])
-    setLastDoc(result.lastDoc)
-    setHasMore(result.hasMore)
+    try {
+      const result = await buscarAnuncios(filters, lastDoc)
+      setAnuncios((prev) => [...prev, ...result.anuncios])
+      setLastDoc(result.lastDoc)
+      setHasMore(result.hasMore)
+    } catch (e) {
+      registrarError(e, 'BuscarPage:cargar-mas')
+    }
   }
 
   return (

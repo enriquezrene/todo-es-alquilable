@@ -3,7 +3,7 @@
 import { formatearPrecio } from '@/lib/dominio/formatear-precio'
 import { etiquetasCondicion, type CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
 import type { UnidadPrecio } from '@/lib/dominio/unidades-precio'
-import type { FormularioAnuncio, PasoFormulario } from '../types'
+import type { FormularioAnuncio, ImagenSlot, PasoFormulario } from '../types'
 
 type Props = {
   datos: FormularioAnuncio
@@ -40,10 +40,10 @@ export default function StepRevision({ datos, onEditStep }: Props) {
             <EditLink onClick={() => onEditStep('fotos')}>Editar</EditLink>
           </div>
           <div className="mt-2 flex gap-2 overflow-x-auto">
-            {datos.imagesPreviews.map((preview, i) => (
+            {datos.imageSlots.map((slot: ImagenSlot, i: number) => (
               <img
                 key={i}
-                src={preview}
+                src={slot.tipo === 'nueva' ? slot.preview : slot.thumbnail || slot.url}
                 alt={`Foto ${i + 1}`}
                 className="h-20 w-20 flex-shrink-0 rounded-lg object-cover"
               />

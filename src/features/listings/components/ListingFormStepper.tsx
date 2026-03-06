@@ -5,16 +5,17 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/shared/providers/AuthProvider'
 import { useToast } from '@/shared/providers/ToastProvider'
 import { crearAnuncio } from '@/features/listings/services/listing-service'
-import { subirImagenesAnuncio } from '@/features/listings/services/image-service'
+import { subirImagenesComprimidas } from '@/features/listings/services/image-service'
 import {
   validarPasoCategoria,
   validarPasoFotos,
   validarPasoDetalles,
   validarPasoPrecio,
 } from '@/features/listings/services/validar-anuncio'
-import type { FormularioAnuncio, PasoFormulario } from '../types'
+import type { FormularioAnuncio, ImagenSlot, PasoFormulario } from '../types'
 import { PASOS_FORMULARIO, ETIQUETAS_PASO } from '../types'
 import type { ErroresFormulario } from '@/features/auth/types'
+import { registrarError } from '@/lib/registrar-error'
 import StepCategoria from './StepCategoria'
 import StepFotos from './StepFotos'
 import StepDetalles from './StepDetalles'
@@ -40,8 +41,7 @@ export default function ListingFormStepper() {
     price: '',
     priceUnit: '',
     province: '',
-    images: [],
-    imagesPreviews: [],
+    imageSlots: [],
   })
 
   const indiceActual = PASOS_FORMULARIO.indexOf(pasoActual)
@@ -88,7 +88,33 @@ export default function ListingFormStepper() {
 
     setLoading(true)
     try {
-      const listingId = await crearAnuncio({
+      const t0 = performance.now()
+
+      const nuevas = datos.imageSlots.filter(
+        (s): s is Extract<ImagenSlot, { tipo: 'nueva' }> => s.tipo === 'nueva'
+      )
+
+      // Start image compression immediately while loading Firestore chunk
+      const compressionPromise = nuevas.length > 0
+        ? import('@/lib/imagenes/comprimir-imagen').then(({ procesarImagenes }) => procesarImagenes(nuevas.map(s => s.file)))
+        : Promise.resolve([])
+
+      const { doc: createDocRef, collection: getCollection, getDb } = await import('@/lib/firebase/firebase-firestore')
+      const listingId = createDocRef(getCollection(getDb(), 'listings')).id
+      console.log(`[timing] Firestore import + doc ID: ${Math.round(performance.now() - t0)}ms`)
+
+      // Upload compressed images
+      const processed = await compressionPromise
+      const t1 = performance.now()
+      console.log(`[timing] Image compression (${nuevas.length} images, ${processed.map(p => `full:${(p.full.size / 1024).toFixed(0)}KB thumb:${(p.thumbnail.size / 1024).toFixed(0)}KB`).join(', ')}): ${Math.round(t1 - t0)}ms`)
+
+      const { imageUrls, thumbnailUrls } = processed.length > 0
+        ? await subirImagenesComprimidas(listingId, processed)
+        : { imageUrls: [] as string[], thumbnailUrls: [] as string[] }
+      console.log(`[timing] Upload to Storage: ${Math.round(performance.now() - t1)}ms`)
+
+      const t2 = performance.now()
+      await crearAnuncio({
         title: datos.title.trim(),
         description: datos.description.trim(),
         categoryId: datos.categoryId,
@@ -97,22 +123,20 @@ export default function ListingFormStepper() {
         price: parseFloat(datos.price),
         priceUnit: datos.priceUnit,
         province: datos.province,
-        images: [],
+        images: imageUrls,
+        thumbnails: thumbnailUrls,
         ownerId: user.uid,
         ownerName: user.displayName || '',
         ownerPhone: '',
         ownerPhotoURL: user.photoURL,
-      })
-
-      if (datos.images.length > 0) {
-        const urls = await subirImagenesAnuncio(listingId, datos.images)
-        const { actualizarAnuncio } = await import('@/features/listings/services/listing-service')
-        await actualizarAnuncio(listingId, { images: urls })
-      }
+      }, listingId)
+      console.log(`[timing] Firestore write: ${Math.round(performance.now() - t2)}ms`)
+      console.log(`[timing] TOTAL: ${Math.round(performance.now() - t0)}ms`)
 
       mostrarToast('Anuncio publicado. Será revisado pronto.', 'success')
       router.push('/mis-anuncios')
-    } catch {
+    } catch (error) {
+      registrarError(error, 'ListingFormStepper:publicar')
       mostrarToast('Error al publicar el anuncio', 'error')
     } finally {
       setLoading(false)

@@ -23,9 +23,14 @@ export default function CategoriasAdminPage() {
 
   useEffect(() => {
     async function cargar() {
-      const data = await obtenerCategorias()
-      setCategorias(data)
-      setLoading(false)
+      try {
+        const data = await obtenerCategorias()
+        setCategorias(data)
+      } catch (e) {
+        registrarError(e, 'CategoriasPage:cargar')
+      } finally {
+        setLoading(false)
+      }
     }
     cargar()
   }, [])

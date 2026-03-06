@@ -9,6 +9,7 @@ import type { FormularioLogin, ErroresFormulario } from '@/features/auth/types'
 import Button from '@/shared/components/ui/Button'
 import Input from '@/shared/components/ui/Input'
 import { useToast } from '@/shared/providers/ToastProvider'
+import { registrarError } from '@/lib/registrar-error'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -39,7 +40,8 @@ export default function LoginForm() {
       await iniciarSesion(datos.email, datos.password)
       mostrarToast('Sesión iniciada correctamente', 'success')
       router.push('/')
-    } catch {
+    } catch (error) {
+      registrarError(error, 'LoginForm:iniciar-sesion')
       mostrarToast('Email o contraseña incorrectos', 'error')
     } finally {
       setLoading(false)
