@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/shared/providers/AuthProvider'
 import { cerrarSesion } from '@/lib/firebase/firebase-auth'
 import Button from '@/shared/components/ui/Button'
@@ -12,6 +13,7 @@ type MobileMenuProps = {
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const { user, role } = useAuth()
+  const pathname = usePathname()
   const isAdmin = role === 'admin' || role === 'super_admin' || role === 'moderator'
 
   const handleSignOut = async () => {
@@ -35,23 +37,63 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
 
         <nav className="flex flex-col gap-3">
-          <Link href="/buscar" onClick={onClose} className="rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100">
+          <Link 
+            href="/buscar" 
+            onClick={onClose} 
+            className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+              pathname === '/buscar' 
+                ? 'bg-blue-50 text-blue-600' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
             Buscar
           </Link>
 
           {user ? (
             <>
-              <Link href="/publicar" onClick={onClose} className="rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100">
+              <Link 
+                href="/publicar" 
+                onClick={onClose} 
+                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                  pathname === '/publicar' 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
                 Publicar anuncio
               </Link>
-              <Link href="/mis-anuncios" onClick={onClose} className="rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100">
+              <Link 
+                href="/mis-anuncios" 
+                onClick={onClose} 
+                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                  pathname === '/mis-anuncios' 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
                 Mis anuncios
               </Link>
-              <Link href="/perfil" onClick={onClose} className="rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100">
+              <Link 
+                href="/perfil" 
+                onClick={onClose} 
+                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                  pathname === '/perfil' 
+                    ? 'bg-blue-50 text-blue-600' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
                 Mi perfil
               </Link>
               {isAdmin && (
-                <Link href="/admin/pendientes" onClick={onClose} className="rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100">
+                <Link 
+                  href="/admin/pendientes" 
+                  onClick={onClose} 
+                  className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                    pathname.startsWith('/admin') 
+                      ? 'bg-blue-50 text-blue-600' 
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
                   Panel Admin
                 </Link>
               )}

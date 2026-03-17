@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/shared/providers/AuthProvider'
 import { cerrarSesion } from '@/lib/firebase/firebase-auth'
 import Container from './Container'
@@ -11,6 +12,7 @@ import MobileMenu from './MobileMenu'
 export default function Navbar() {
   const { user, role, loading } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   const handleSignOut = async () => {
     await cerrarSesion()
@@ -27,7 +29,14 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden items-center gap-4 md:flex">
-            <Link href="/buscar" className="text-sm text-gray-600 hover:text-gray-900">
+            <Link 
+              href="/buscar" 
+              className={`text-sm font-medium transition-colors ${
+                pathname === '/buscar' 
+                  ? 'text-blue-600' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
               Buscar
             </Link>
 
@@ -35,19 +44,46 @@ export default function Navbar() {
               <>
                 {user ? (
                   <>
-                    <Link href="/publicar">
-                      <Button size="sm">Publicar</Button>
+                    <Link href="/publicar"
+                          className={`text-sm font-medium transition-colors ${
+                            pathname === '/publicar'
+                              ? 'text-blue-600'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                    >
+                      Publicar
                     </Link>
-                    <Link href="/mis-anuncios" className="text-sm text-gray-600 hover:text-gray-900">
+                    <Link 
+                      href="/mis-anuncios" 
+                      className={`text-sm font-medium transition-colors ${
+                        pathname === '/mis-anuncios' 
+                          ? 'text-blue-600' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
                       Mis anuncios
                     </Link>
                     {isAdmin && (
-                      <Link href="/admin/pendientes" className="text-sm text-gray-600 hover:text-gray-900">
-                        Admin
+                      <Link 
+                        href="/admin/pendientes" 
+                        className={`text-sm font-medium transition-colors ${
+                          pathname.startsWith('/admin') 
+                            ? 'text-blue-600' 
+                            : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        Gestionar anuncios
                       </Link>
                     )}
-                    <Link href="/perfil" className="text-sm text-gray-600 hover:text-gray-900">
-                      {user.displayName || 'Perfil'}
+                    <Link 
+                      href="/perfil" 
+                      className={`text-sm font-medium transition-colors ${
+                        pathname === '/perfil' 
+                          ? 'text-blue-600' 
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {'Mi Perfil'}
                     </Link>
                     <Button variant="ghost" size="sm" onClick={handleSignOut}>
                       Salir

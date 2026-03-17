@@ -38,7 +38,8 @@ export default function BorrarAnunciosPage() {
         try {
           await deleteDoc(doc(db, 'listings', docSnap.id))
           deleted++
-        } catch {
+        } catch(e) {
+          console.log(e)
           failed++
         }
         await delay(50)
