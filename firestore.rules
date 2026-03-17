@@ -56,6 +56,8 @@ service cloud.firestore {
             // Resubmit for review: can set status back to pendiente
             || request.resource.data.status == 'pendiente'
         )
+        // Allow anyone to increment view count
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount']))
         || isModerator();
 
       allow delete: if isOwner(resource.data.ownerId) || isAdmin();

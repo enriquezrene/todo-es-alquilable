@@ -34,7 +34,10 @@ export default function AnuncioDetallePage() {
         setAnuncio(data)
 
         if (data) {
-          incrementarVistas(id).catch((e) => registrarError(e, 'AnuncioPage:vistas'))
+          // Increment views silently - don't show errors to users if this fails
+          incrementarVistas(id).catch(() => {
+            // Silently fail - view count is not critical for user experience
+          })
 
           const { anuncios } = await obtenerAnunciosAprobados(4)
           setSimilares(anuncios.filter((a) => a.id !== id).slice(0, 4))
