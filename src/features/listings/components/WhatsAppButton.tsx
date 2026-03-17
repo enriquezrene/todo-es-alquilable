@@ -8,8 +8,12 @@ type WhatsAppButtonProps = {
 }
 
 export default function WhatsAppButton({ phone, listingTitle, className = '' }: WhatsAppButtonProps) {
-  if (!phone) {
-    console.error('WhatsAppButton: No phone number provided')
+  // Handle various falsy values and empty strings
+  if (!phone || phone.trim() === '') {
+    // Only show warning in development
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('WhatsAppButton: No phone number provided for listing:', listingTitle)
+    }
     return (
       <Button disabled className="w-full gap-2 bg-gray-400 cursor-not-allowed">
         <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -21,7 +25,7 @@ export default function WhatsAppButton({ phone, listingTitle, className = '' }: 
   }
 
   const mensaje = construirMensajeAlquiler(listingTitle)
-  const enlace = construirEnlaceWhatsApp(phone, mensaje)
+  const enlace = construirEnlaceWhatsApp(phone.trim(), mensaje)
 
   return (
     <a href={enlace} target="_blank" rel="noopener noreferrer" className={className}>

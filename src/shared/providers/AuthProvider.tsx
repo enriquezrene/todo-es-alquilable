@@ -11,17 +11,22 @@ type AuthContextValue = {
   user: User | null
   role: RolUsuario | null
   loading: boolean
+  userProfile: {
+    phone?: string
+  } | null
 }
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   role: null,
   loading: true,
+  userProfile: null,
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [role, setRole] = useState<RolUsuario | null>(null)
+  const [userProfile, setUserProfile] = useState<{ phone?: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -36,7 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             const userDoc = await getDoc(doc(getDb(), 'users', firebaseUser.uid))
             if (userDoc.exists()) {
-              userRole = userDoc.data().role as RolUsuario
+              const userData = userDoc.data()
+              userRole = userData.role as RolUsuario
+              setUserProfile({
+                phone: userData.phone
+              })
             }
           } catch (e) {
             registrarError(e, 'AuthProvider:role-fallback')
@@ -46,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole(userRole || 'user')
       } else {
         setRole(null)
+        setUserProfile(null)
       }
 
       setLoading(false)
@@ -54,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe
   }, [])
 
-  return <AuthContext.Provider value={{ user, role, loading }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, role, loading, userProfile }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

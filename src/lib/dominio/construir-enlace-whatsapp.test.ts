@@ -4,12 +4,12 @@ import { construirEnlaceWhatsApp, construirMensajeAlquiler } from './construir-e
 describe('construirEnlaceWhatsApp', () => {
   it('construye enlace con teléfono y mensaje', () => {
     const enlace = construirEnlaceWhatsApp('+593991234567', 'Hola')
-    expect(enlace).toBe('https://wa.me/593991234567?text=Hola')
+    expect(enlace).toBe('https://wa.me/+593991234567?text=Hola')
   })
 
   it('limpia caracteres no numéricos del teléfono', () => {
     const enlace = construirEnlaceWhatsApp('+593 99 123-4567', 'Hola')
-    expect(enlace).toBe('https://wa.me/593991234567?text=Hola')
+    expect(enlace).toBe('https://wa.me/+593991234567?text=Hola')
   })
 
   it('codifica el mensaje para URL', () => {
