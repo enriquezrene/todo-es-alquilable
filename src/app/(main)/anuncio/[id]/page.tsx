@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/shared/providers/AuthProvider'
 import Container from '@/shared/components/layout/Container'
 import Spinner from '@/shared/components/ui/Spinner'
 import Badge from '@/shared/components/ui/Badge'
+import Button from '@/shared/components/ui/Button'
 import PhotoGallery from '@/features/listings/components/PhotoGallery'
 import WhatsAppButton from '@/features/listings/components/WhatsAppButton'
 import ListingGrid from '@/features/listings/components/ListingGrid'
@@ -17,6 +20,7 @@ import type { Anuncio } from '@/shared/types/anuncio'
 
 export default function AnuncioDetallePage() {
   const params = useParams()
+  const { user } = useAuth()
   const id = params.id as string
   const [anuncio, setAnuncio] = useState<Anuncio | null>(null)
   const [similares, setSimilares] = useState<Anuncio[]>([])
@@ -105,6 +109,14 @@ export default function AnuncioDetallePage() {
             </div>
 
             <WhatsAppButton phone={anuncio.ownerPhone} listingTitle={anuncio.title} />
+            
+            {user && user.uid === anuncio.ownerId && (
+              <Link href={`/mis-anuncios/editar/${anuncio.id}`} className="block w-full">
+                <Button variant="outline" size="sm" className="w-full">
+                  Editar anuncio
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -15,6 +15,8 @@ import {
 import type { FormularioAnuncio, ImagenSlot } from '../types'
 import type { ErroresFormulario } from '@/features/auth/types'
 import type { Anuncio } from '@/shared/types/anuncio'
+import type { CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
+import type { UnidadPrecio } from '@/lib/dominio/unidades-precio'
 import { registrarError } from '@/lib/registrar-error'
 import StepCategoria from './StepCategoria'
 import StepFotos from './StepFotos'
@@ -108,24 +110,27 @@ export default function ListingEditForm({ anuncio }: Props) {
         }
       }
 
-      await reenviarAnuncio(anuncio.id, {
+      const updateData = {
         title: datos.title.trim(),
         description: datos.description.trim(),
         categoryId: datos.categoryId,
         categoryName: datos.categoryName,
-        condition: datos.condition,
+        condition: datos.condition as CondicionArticulo, // Type assertion since validation ensures it's not empty
         price: parseFloat(datos.price),
-        priceUnit: datos.priceUnit,
+        priceUnit: datos.priceUnit as UnidadPrecio, // Type assertion since validation ensures it's not empty
         province: datos.province,
         images: finalImageUrls,
         thumbnails: finalThumbnailUrls,
-      })
+      }
 
-      mostrarToast('Anuncio reenviado para revisión.', 'success')
+      // All edited listings should go through revision process
+      await reenviarAnuncio(anuncio.id, updateData)
+      mostrarToast('Anuncio enviado para revisión.', 'success')
+
       router.push('/mis-anuncios')
     } catch (error) {
-      registrarError(error, 'ListingEditForm:reenviar')
-      mostrarToast('Error al reenviar el anuncio', 'error')
+      registrarError(error, 'ListingEditForm:editar')
+      mostrarToast('Error al actualizar el anuncio', 'error')
     } finally {
       setLoading(false)
     }
@@ -157,7 +162,7 @@ export default function ListingEditForm({ anuncio }: Props) {
 
       <div className="pt-4">
         <Button onClick={handleSubmit} loading={loading} className="w-full">
-          Reenviar para revisión
+          Enviar para revisión
         </Button>
       </div>
     </div>

@@ -53,9 +53,8 @@ service cloud.firestore {
         && (
           // Normal edit: cannot change moderation fields
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'moderatorId', 'moderatedAt'])
-          // Resubmit after changes requested: can set status back to pendiente
-          || (resource.data.status == 'cambios_requeridos'
-              && request.resource.data.status == 'pendiente')
+            // Resubmit for review: can set status back to pendiente
+            || request.resource.data.status == 'pendiente'
         )
         || isModerator();
 

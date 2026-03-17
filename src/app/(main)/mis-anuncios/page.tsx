@@ -8,6 +8,7 @@ import type { EstadoAnuncio } from '@/lib/dominio/estados-anuncio'
 import Container from '@/shared/components/layout/Container'
 import AuthGuard from '@/features/auth/components/AuthGuard'
 import ListingGrid from '@/features/listings/components/ListingGrid'
+import EditableListingGrid from '@/features/listings/components/EditableListingGrid'
 import CambiosRequeridosCard from '@/features/listings/components/CambiosRequeridosCard'
 import { SkeletonCard } from '@/shared/components/ui/Skeleton'
 import EmptyState from '@/shared/components/feedback/EmptyState'
@@ -82,11 +83,19 @@ export default function MisAnunciosPage() {
             </div>
           )
         ) : (
-          <ListingGrid
-            anuncios={anuncios}
-            loading={loading}
-            emptyMessage={emptyMessages[tabActiva]}
-          />
+          tabActiva === 'aprobado' || tabActiva === 'pendiente' ? (
+            <EditableListingGrid
+              anuncios={anuncios}
+              loading={loading}
+              emptyMessage={emptyMessages[tabActiva]}
+            />
+          ) : (
+            <ListingGrid
+              anuncios={anuncios}
+              loading={loading}
+              emptyMessage={emptyMessages[tabActiva]}
+            />
+          )
         )}
       </Container>
     </AuthGuard>

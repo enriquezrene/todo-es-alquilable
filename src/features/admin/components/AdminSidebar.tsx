@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 
 const menuItems = [
   { href: '/admin/pendientes', label: 'Pendientes', icon: '📋' },
+  { href: '/admin/aprobados', label: 'Aprobados', icon: '✅' },
   { href: '/admin/categorias', label: 'Categorías', icon: '📁' },
   { href: '/admin/usuarios', label: 'Usuarios', icon: '👥' },
   { href: '/admin/reportes', label: 'Reportes', icon: '🚨' },

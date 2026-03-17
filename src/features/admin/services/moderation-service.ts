@@ -6,6 +6,7 @@ import {
   orderBy,
   updateDoc,
   doc,
+  deleteDoc,
   serverTimestamp,
   getDb,
   type DocumentSnapshot,
@@ -68,4 +69,18 @@ export async function solicitarCambios(
     moderatedAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
+}
+
+export async function obtenerAnunciosAprobados(): Promise<Anuncio[]> {
+  const q = query(
+    collection(getDb(), 'listings'),
+    where('status', '==', 'aprobado'),
+    orderBy('createdAt', 'desc'),
+  )
+  const snapshot = await getDocs(q)
+  return snapshot.docs.map(docToAnuncio)
+}
+
+export async function eliminarAnuncio(listingId: string): Promise<void> {
+  await deleteDoc(doc(getDb(), 'listings', listingId))
 }
