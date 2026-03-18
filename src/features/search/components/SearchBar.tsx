@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 type SearchBarProps = {
   initialValue?: string
@@ -16,10 +16,20 @@ export default function SearchBar({
   className = '',
 }: SearchBarProps) {
   const [value, setValue] = useState(initialValue)
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setValue(initialValue)
   }, [initialValue])
+
+  // Cleanup debounce timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+    }
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,12 +40,27 @@ export default function SearchBar({
     onSearch(value)
   }
 
+  // Debounced search that triggers 2 seconds after user stops typing
+  const debouncedSearch = (searchValue: string) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+    
+    debounceRef.current = setTimeout(() => {
+      onSearch(searchValue)
+    }, 2000) // 2 seconds
+  }
+
   return (
     <form onSubmit={handleSubmit} className={`relative ${className}`}>
       <input
         type="text"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          const newValue = e.target.value
+          setValue(newValue)
+          debouncedSearch(newValue)
+        }}
         placeholder={placeholder}
         className="w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 text-sm text-gray-900 shadow-sm transition-colors placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
         style={{ fontSize: '16px' }}
