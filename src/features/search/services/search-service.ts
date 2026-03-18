@@ -16,8 +16,15 @@ import type { SearchFilters } from '../types'
 const PAGE_SIZE = 20
 const FUZZY_THRESHOLD = 0.6
 
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD') // Normalize to decomposed form
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics (accents)
+}
+
 function bigrams(str: string): Set<string> {
-  const s = str.toLowerCase()
+  const s = normalizeText(str)
   const set = new Set<string>()
   for (let i = 0; i < s.length - 1; i++) {
     set.add(s.slice(i, i + 2))
@@ -36,15 +43,15 @@ function similarity(a: string, b: string): number {
 }
 
 function fuzzyMatch(text: string, query: string): boolean {
-  const textLower = text.toLowerCase()
-  const queryLower = query.toLowerCase()
+  const textNormalized = normalizeText(text)
+  const queryNormalized = normalizeText(query)
 
   // Exact substring match is always a hit
-  if (textLower.includes(queryLower)) return true
+  if (textNormalized.includes(queryNormalized)) return true
 
   // Check each word in the text against each query term
-  const queryTerms = queryLower.split(/\s+/).filter(Boolean)
-  const textWords = textLower.split(/\s+/).filter(Boolean)
+  const queryTerms = queryNormalized.split(/\s+/).filter(Boolean)
+  const textWords = textNormalized.split(/\s+/).filter(Boolean)
 
   return queryTerms.every((term) =>
     textWords.some((word) => word.length >= 3 && similarity(word, term) >= FUZZY_THRESHOLD),

@@ -111,7 +111,7 @@ export default function AnuncioDetallePage() {
               </div>
             </div>
 
-            <WhatsAppButton phone={anuncio.ownerPhone} listingTitle={anuncio.title} />
+            <WhatsAppButton ownerId={anuncio.ownerId} listingTitle={anuncio.title} fallbackPhone={anuncio.ownerPhone} />
             
             {user && user.uid === anuncio.ownerId && (
               <Link href={`/mis-anuncios/editar/${anuncio.id}`} className="block w-full">

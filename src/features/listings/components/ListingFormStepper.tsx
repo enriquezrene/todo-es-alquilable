@@ -25,7 +25,7 @@ import Button from '@/shared/components/ui/Button'
 
 export default function ListingFormStepper() {
   const router = useRouter()
-  const { user, userProfile } = useAuth()
+  const { user } = useAuth()
   const { mostrarToast } = useToast()
   const [pasoActual, setPasoActual] = useState<PasoFormulario>('categoria')
   const [loading, setLoading] = useState(false)
@@ -127,7 +127,7 @@ export default function ListingFormStepper() {
         thumbnails: thumbnailUrls,
         ownerId: user.uid,
         ownerName: user.displayName || '',
-        ownerPhone: userProfile?.phone || '',
+        // ownerPhone is now fetched dynamically from user profile
         ownerPhotoURL: user.photoURL,
       }, listingId)
       console.log(`[timing] Firestore write: ${Math.round(performance.now() - t2)}ms`)

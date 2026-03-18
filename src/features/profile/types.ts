@@ -5,3 +5,7 @@ export type FormularioPerfil = {
   city: string
   address: string
 }
+
+export type ErroresFormulario = {
+  [key: string]: string
+}

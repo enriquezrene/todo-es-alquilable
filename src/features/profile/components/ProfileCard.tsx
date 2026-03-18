@@ -31,7 +31,7 @@ export default function ProfileCard({ usuario, showContact = false }: ProfileCar
 
       {showContact && usuario.phone && (
         <div className="mt-4">
-          <WhatsAppButton phone={usuario.phone} listingTitle="" />
+          <WhatsAppButton ownerId={usuario.uid} listingTitle="" fallbackPhone={usuario.phone} />
         </div>
       )}
     </div>

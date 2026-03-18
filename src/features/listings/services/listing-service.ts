@@ -63,7 +63,6 @@ export type CrearAnuncioData = {
   thumbnails: string[]
   ownerId: string
   ownerName: string
-  ownerPhone: string
   ownerPhotoURL: string | null
 }
 

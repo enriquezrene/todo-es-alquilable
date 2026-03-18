@@ -8,24 +8,32 @@ import SearchBar from '@/features/search/components/SearchBar'
 import ListingGrid from '@/features/listings/components/ListingGrid'
 import Button from '@/shared/components/ui/Button'
 import { obtenerAnunciosAprobados } from '@/features/listings/services/listing-service'
+import { obtenerCategorias } from '@/features/admin/services/category-admin-service'
 import { categoriasIniciales } from '@/lib/dominio/categorias-iniciales'
 import { obtenerNombresProvincias } from '@/lib/dominio/provincias-ecuador'
 import { registrarError } from '@/lib/registrar-error'
 import type { Anuncio } from '@/shared/types/anuncio'
+import type { Categoria } from '@/shared/types/categoria'
 
 export default function HomePage() {
   const router = useRouter()
   const [recientes, setRecientes] = useState<Anuncio[]>([])
+  const [categorias, setCategorias] = useState<Categoria[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function cargar() {
       try {
-        const { anuncios } = await obtenerAnunciosAprobados(8)
+        const [{ anuncios }, categoriasData] = await Promise.all([
+          obtenerAnunciosAprobados(8),
+          obtenerCategorias()
+        ])
         setRecientes(anuncios)
+        setCategorias(categoriasData)
       } catch (e) {
-        registrarError(e, 'HomePage:cargar-recientes')
+        registrarError(e, 'HomePage:cargar')
         setRecientes([])
+        setCategorias([])
       }
       setLoading(false)
     }
@@ -60,16 +68,30 @@ export default function HomePage() {
         <Container>
           <h2 className="mb-6 text-xl font-bold text-gray-900">Categorías populares</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-            {categoriasIniciales.map((cat, i) => (
-              <Link
-                key={i}
-                href={`/buscar?categoria=seed-${i}`}
-                className="flex flex-col items-center rounded-xl border border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
-              >
-                <span className="text-3xl">{cat.icono}</span>
-                <span className="mt-2 text-center text-sm font-medium text-gray-700">{cat.nombre}</span>
-              </Link>
-            ))}
+            {categorias.length > 0 ? (
+              categorias.slice(0, 12).map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/buscar?categoria=${cat.id}`}
+                  className="flex flex-col items-center rounded-xl border border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
+                >
+                  <span className="text-3xl">{cat.icon}</span>
+                  <span className="mt-2 text-center text-sm font-medium text-gray-700">{cat.name}</span>
+                </Link>
+              ))
+            ) : (
+              // Fallback to placeholder categories if no real ones exist
+              categoriasIniciales.map((cat, i) => (
+                <Link
+                  key={i}
+                  href={`/buscar?categoria=seed-${i}`}
+                  className="flex flex-col items-center rounded-xl border border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
+                >
+                  <span className="text-3xl">{cat.icono}</span>
+                  <span className="mt-2 text-center text-sm font-medium text-gray-700">{cat.nombre}</span>
+                </Link>
+              ))
+            )}
           </div>
         </Container>
       </section>

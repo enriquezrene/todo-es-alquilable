@@ -17,7 +17,7 @@ export type Anuncio = {
   thumbnails: string[]
   ownerId: string
   ownerName: string
-  ownerPhone: string
+  ownerPhone?: string // Optional for backward compatibility - will be removed in future
   ownerPhotoURL: string | null
   status: EstadoAnuncio
   rejectionReason: string | null

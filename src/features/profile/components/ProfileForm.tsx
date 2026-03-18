@@ -4,9 +4,10 @@ import { useState, useMemo, useEffect } from 'react'
 import { useAuth } from '@/shared/providers/AuthProvider'
 import { useToast } from '@/shared/providers/ToastProvider'
 import { obtenerPerfil, actualizarPerfil } from '@/features/profile/services/profile-service'
+import { validarFormularioPerfil } from '@/features/profile/services/validar-formulario-perfil'
 import { formatearTelefonoEcuador } from '@/lib/dominio/validar-telefono-ecuador'
 import { obtenerNombresProvincias, obtenerCiudadesPorProvincia } from '@/lib/dominio/provincias-ecuador'
-import type { FormularioPerfil } from '../types'
+import type { FormularioPerfil, ErroresFormulario } from '../types'
 import { registrarError } from '@/lib/registrar-error'
 import Input from '@/shared/components/ui/Input'
 import Select from '@/shared/components/ui/Select'
@@ -18,6 +19,7 @@ export default function ProfileForm() {
   const { mostrarToast } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [errores, setErrores] = useState<ErroresFormulario>({})
   const [datos, setDatos] = useState<FormularioPerfil>({
     displayName: '',
     phone: '',
@@ -70,11 +72,18 @@ export default function ProfileForm() {
       if (field === 'province') updated.city = ''
       return updated
     })
+    setErrores((prev) => ({ ...prev, [field]: '' }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
+
+    const nuevosErrores = validarFormularioPerfil(datos)
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrores(nuevosErrores)
+      return
+    }
 
     setSaving(true)
     try {
@@ -95,13 +104,46 @@ export default function ProfileForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input label="Nombre" value={datos.displayName} onChange={handleChange('displayName')} />
-      <Input label="Teléfono" value={datos.phone} onChange={handleChange('phone')} placeholder="+593991234567" />
+      <Input 
+        label="Nombre" 
+        value={datos.displayName} 
+        onChange={handleChange('displayName')} 
+        error={errores.displayName}
+      />
+      <Input 
+        label="Teléfono" 
+        value={datos.phone} 
+        onChange={handleChange('phone')} 
+        error={errores.phone}
+        placeholder="+593991234567" 
+        required
+      />
       <div className="grid gap-4 sm:grid-cols-2">
-        <Select label="Provincia" options={provincias} value={datos.province} onChange={handleChange('province')} placeholder="Selecciona" />
-        <Select label="Ciudad" options={ciudades} value={datos.city} onChange={handleChange('city')} placeholder="Selecciona" disabled={!datos.province} />
+        <Select 
+          label="Provincia" 
+          options={provincias} 
+          value={datos.province} 
+          onChange={handleChange('province')} 
+          placeholder="Selecciona" 
+          error={errores.province}
+        />
+        <Select 
+          label="Ciudad" 
+          options={ciudades} 
+          value={datos.city} 
+          onChange={handleChange('city')} 
+          placeholder="Selecciona" 
+          disabled={!datos.province}
+          error={errores.city}
+        />
       </div>
-      <Input label="Dirección" value={datos.address} onChange={handleChange('address')} />
+      <Input 
+        label="Dirección" 
+        value={datos.address} 
+        onChange={handleChange('address')} 
+        error={errores.address}
+        required
+      />
       <Button type="submit" loading={saving}>
         Guardar cambios
       </Button>

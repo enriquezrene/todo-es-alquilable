@@ -2,8 +2,18 @@ import { registrarConEmail, iniciarSesionConEmail, cerrarSesion, actualizarPerfi
 import { doc, setDoc, getDoc, serverTimestamp, getDb } from '@/lib/firebase/firebase-firestore'
 import type { FormularioRegistro } from '../types'
 import type { RolUsuario } from '@/shared/types/usuario'
+import { validarTelefonoEcuador } from '@/lib/dominio/validar-telefono-ecuador'
 
 export async function registrarUsuario(datos: FormularioRegistro) {
+  // Server-side validation: phone number is required
+  if (!datos.phone || datos.phone.trim() === '') {
+    throw new Error('El número de teléfono es requerido')
+  }
+  
+  if (!validarTelefonoEcuador(datos.phone)) {
+    throw new Error('El número de teléfono no es válido. Debe tener formato +593XXXXXXXXX')
+  }
+
   const credential = await registrarConEmail(datos.email, datos.password)
   const user = credential.user
 

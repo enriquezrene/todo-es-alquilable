@@ -5,7 +5,7 @@ export type Usuario = {
   email: string
   displayName: string
   photoURL: string | null
-  phone: string
+  phone: string // Required field - users must have a phone number
   province: string
   city: string
   address: string
