@@ -1,5 +1,7 @@
 # Todo es Alquilable
 
+![CI/CD](https://github.com/enriquezrene/todo-es-alquilable/actions/workflows/ci.yml/badge.svg)
+
 Marketplace de alquiler para Ecuador. Publica y encuentra artículos en renta: herramientas, electrónica, deportes, vehículos y mucho más.
 
 **Dominio:** www.todoesalquilable.com
@@ -10,6 +12,16 @@ Marketplace de alquiler para Ecuador. Publica y encuentra artículos en renta: h
 - **Backend:** Firebase (Auth, Firestore, Storage, Cloud Functions)
 - **Testing:** Vitest, React Testing Library
 - **CI/CD:** GitHub Actions, Firebase Hosting
+
+### Estado del Build
+
+El badge ![CI/CD](https://github.com/enriquezrene/todo-es-alquilable/actions/workflows/ci.yml/badge.svg) muestra el estado actual del pipeline de integración continua y despliegue:
+
+- ✅ **Verde**: Último build exitoso y despliegue completado
+- 🟡 **Amarillo**: Build en proceso o despliegue en curso
+- 🔴 **Rojo**: Error en el build o despliegue fallido
+
+Puedes ver el estado detallado en [GitHub Actions](https://github.com/enriquezrene/todo-es-alquilable/actions).
 
 ## Inicio rápido
 
