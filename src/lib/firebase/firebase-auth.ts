@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signOut as firebaseSignOut,
   updateProfile,
   onAuthStateChanged,
@@ -27,4 +28,12 @@ export async function actualizarPerfil(user: User, data: { displayName?: string;
 
 export function observarEstadoAuth(callback: (user: User | null) => void): Unsubscribe {
   return onAuthStateChanged(getAuthInstance(), callback)
+}
+
+export async function enviarEmailRecuperacionContrasena(email: string) {
+  const actionCodeSettings = {
+    url: `${typeof window !== 'undefined' ? window.location.origin : ''}/iniciar-sesion`,
+    handleCodeInApp: false,
+  }
+  return sendPasswordResetEmail(getAuthInstance(), email, actionCodeSettings)
 }

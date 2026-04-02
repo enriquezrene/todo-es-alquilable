@@ -69,12 +69,17 @@ export default function LoginForm() {
       <Button type="submit" loading={loading} className="w-full">
         Iniciar sesión
       </Button>
-      <p className="text-center text-sm text-gray-600">
-        ¿No tienes cuenta?{' '}
-        <Link href="/registrarse" className="font-medium text-blue-600 hover:text-blue-500">
-          Regístrate
+      <div className="space-y-2 text-center text-sm">
+        <Link href="/recuperar-contrasena" className="font-medium text-blue-600 hover:text-blue-500">
+          ¿Olvidaste tu contraseña?
         </Link>
-      </p>
+        <p className="text-gray-600">
+          ¿No tienes cuenta?{' '}
+          <Link href="/registrarse" className="font-medium text-blue-600 hover:text-blue-500">
+            Regístrate
+          </Link>
+        </p>
+      </div>
     </form>
   )
 }

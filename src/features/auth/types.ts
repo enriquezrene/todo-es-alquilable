@@ -14,4 +14,8 @@ export type FormularioLogin = {
   password: string
 }
 
+export type FormularioRecuperarContrasena = {
+  email: string
+}
+
 export type ErroresFormulario = Record<string, string>
