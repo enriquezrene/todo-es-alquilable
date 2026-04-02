@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Container from '@/shared/components/layout/Container'
 import { getAuthInstance } from '@/lib/firebase/firebase-config'
 import { checkActionCode } from 'firebase/auth'
 import Button from '@/shared/components/ui/Button'
 
-export default function PasswordResetActionPage() {
+function PasswordResetActionContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(true)
@@ -145,4 +145,19 @@ export default function PasswordResetActionPage() {
   }
 
   return null
+}
+
+export default function PasswordResetActionPage() {
+  return (
+    <Suspense fallback={
+      <Container className="py-12">
+        <div className="mx-auto max-w-md text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Procesando...</p>
+        </div>
+      </Container>
+    }>
+      <PasswordResetActionContent />
+    </Suspense>
+  )
 }
