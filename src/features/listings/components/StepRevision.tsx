@@ -1,5 +1,6 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element */
 import { formatearPrecio } from '@/lib/dominio/formatear-precio'
 import { etiquetasCondicion, type CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
 import type { UnidadPrecio } from '@/lib/dominio/unidades-precio'
@@ -40,8 +41,8 @@ export default function StepRevision({ datos, onEditStep }: Props) {
             <EditLink onClick={() => onEditStep('fotos')}>Editar</EditLink>
           </div>
           <div className="mt-2 flex gap-2 overflow-x-auto">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             {datos.imageSlots.map((slot: ImagenSlot, i: number) => (
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 key={i}
                 src={slot.tipo === 'nueva' ? slot.preview : slot.thumbnail || slot.url}

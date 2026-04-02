@@ -1,5 +1,6 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element */
 import { useState } from 'react'
 import type { Anuncio } from '@/shared/types/anuncio'
 import { formatearPrecio } from '@/lib/dominio/formatear-precio'
@@ -31,6 +32,7 @@ export default function ListingReviewCard({
   onRequestChanges,
   onEditAndApprove,
 }: ListingReviewCardProps) {
+  // eslint-disable-next-line @next/next/no-img-element
   const [reason, setReason] = useState('')
   const [showReason, setShowReason] = useState(false)
   const [action, setAction] = useState<'reject' | 'changes' | null>(null)
@@ -71,8 +73,8 @@ export default function ListingReviewCard({
     return (
       <div className="rounded-xl border border-blue-200 bg-blue-50/30 p-4">
         <div className="flex gap-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           {anuncio.images[0] && (
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={anuncio.images[0]}
               alt={anuncio.title}
@@ -134,8 +136,8 @@ export default function ListingReviewCard({
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex gap-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         {anuncio.images[0] && (
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={anuncio.images[0]}
             alt={anuncio.title}
