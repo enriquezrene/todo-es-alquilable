@@ -41,6 +41,7 @@ export default function StepRevision({ datos, onEditStep }: Props) {
           </div>
           <div className="mt-2 flex gap-2 overflow-x-auto">
             {datos.imageSlots.map((slot: ImagenSlot, i: number) => (
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 key={i}
                 src={slot.tipo === 'nueva' ? slot.preview : slot.thumbnail || slot.url}

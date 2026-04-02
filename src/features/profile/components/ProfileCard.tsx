@@ -13,6 +13,7 @@ export default function ProfileCard({ usuario, showContact = false }: ProfileCar
       <div className="flex items-center gap-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-600">
           {usuario.photoURL ? (
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={usuario.photoURL} alt={usuario.displayName} className="h-full w-full rounded-full object-cover" />
           ) : (
             usuario.displayName.charAt(0).toUpperCase()

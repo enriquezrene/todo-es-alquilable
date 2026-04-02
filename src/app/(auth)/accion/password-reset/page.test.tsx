@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import PasswordResetActionPage from './page'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { getAuthInstance } from '@/lib/firebase/firebase-config'
 import { checkActionCode } from 'firebase/auth'
 
 // Mock Next.js hooks

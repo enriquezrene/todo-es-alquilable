@@ -21,6 +21,7 @@ export default function PhotoGallery({ images, title }: PhotoGalleryProps) {
   return (
     <div>
       <div className="aspect-[4/3] overflow-hidden rounded-xl bg-gray-100">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={images[selectedIndex]}
           alt={`${title} - Foto ${selectedIndex + 1}`}
@@ -38,6 +39,7 @@ export default function PhotoGallery({ images, title }: PhotoGalleryProps) {
                 i === selectedIndex ? 'border-blue-500' : 'border-transparent'
               }`}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={img} alt={`Miniatura ${i + 1}`} className="h-full w-full object-cover" />
             </button>
           ))}

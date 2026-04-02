@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Container from '@/shared/components/layout/Container'
 import { getAuthInstance } from '@/lib/firebase/firebase-config'
-import { applyActionCode, checkActionCode } from 'firebase/auth'
+import { checkActionCode } from 'firebase/auth'
 import Button from '@/shared/components/ui/Button'
 
 export default function PasswordResetActionPage() {
@@ -34,7 +34,7 @@ export default function PasswordResetActionPage() {
         // The password reset form will be handled by Firebase's default UI
         // After user completes password reset, Firebase will redirect to the continue URL
         setSuccess(true)
-      } catch (err) {
+      } catch {
         setError('El enlace para restablecer contraseña es inválido o ha expirado')
       } finally {
         setLoading(false)

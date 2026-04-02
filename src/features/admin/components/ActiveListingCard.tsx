@@ -71,6 +71,7 @@ export default function ActiveListingCard({
     <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <div className="flex gap-4">
         <div className="flex-shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageSrc}
             alt={anuncio.title}

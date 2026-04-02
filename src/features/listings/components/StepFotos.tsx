@@ -88,6 +88,7 @@ export default function StepFotos({ datos, errores, onChange }: Props) {
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {datos.imageSlots.map((slot, i) => (
             <div key={i} className="group relative aspect-square overflow-hidden rounded-lg">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={getPreviewUrl(slot)} alt={`Foto ${i + 1}`} className="h-full w-full object-cover" />
               <button
                 onClick={() => eliminar(i)}

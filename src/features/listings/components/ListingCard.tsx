@@ -14,6 +14,7 @@ export default function ListingCard({ anuncio }: ListingCardProps) {
     <Link href={`/anuncio/${anuncio.id}`}>
       <article className="group overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
         <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageSrc}
             alt={anuncio.title}

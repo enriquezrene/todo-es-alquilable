@@ -72,6 +72,7 @@ export default function ListingReviewCard({
       <div className="rounded-xl border border-blue-200 bg-blue-50/30 p-4">
         <div className="flex gap-4">
           {anuncio.images[0] && (
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={anuncio.images[0]}
               alt={anuncio.title}
@@ -134,6 +135,7 @@ export default function ListingReviewCard({
     <div className="rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex gap-4">
         {anuncio.images[0] && (
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={anuncio.images[0]}
             alt={anuncio.title}
