@@ -26,6 +26,10 @@ describe('PasswordResetActionPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    // Reset search params to empty state
+    mockSearchParams.delete('oobCode')
+    mockSearchParams.delete('mode')
+    
     vi.mocked(useRouter).mockReturnValue({
       push: mockPush,
       replace: vi.fn(),
@@ -37,9 +41,14 @@ describe('PasswordResetActionPage', () => {
     vi.mocked(useSearchParams).mockReturnValue(mockSearchParams)
   })
 
-  it('debe mostrar loading inicialmente', () => {
+  it('debe mostrar loading inicialmente', async () => {
+    // Set up valid params to avoid immediate error
+    mockSearchParams.set('oobCode', 'test-code')
+    mockSearchParams.set('mode', 'resetPassword')
+    
     render(<PasswordResetActionPage />)
     
+    // Should show loading initially
     expect(screen.getByText('Procesando...')).toBeInTheDocument()
   })
 
@@ -49,7 +58,8 @@ describe('PasswordResetActionPage', () => {
     
     render(<PasswordResetActionPage />)
     
-    await expect(screen.findByText('Enlace inválido o expirado')).toBeInTheDocument()
+    const errorElement = await screen.findByText('Enlace inválido o expirado')
+    expect(errorElement).toBeInTheDocument()
   })
 
   it('debe mostrar error cuando el código es inválido', async () => {
@@ -60,7 +70,8 @@ describe('PasswordResetActionPage', () => {
     
     render(<PasswordResetActionPage />)
     
-    await expect(screen.findByText('El enlace para restablecer contraseña es inválido o ha expirado')).toBeInTheDocument()
+    const errorElement = await screen.findByText('El enlace para restablecer contraseña es inválido o ha expirado')
+    expect(errorElement).toBeInTheDocument()
   })
 
   it('debe mostrar éxito cuando el código es válido', async () => {
@@ -71,7 +82,8 @@ describe('PasswordResetActionPage', () => {
     
     render(<PasswordResetActionPage />)
     
-    await expect(screen.findByText('¡Contraseña restablecida!')).toBeInTheDocument()
+    const successElement = await screen.findByText('¡Contraseña restablecida!')
+    expect(successElement).toBeInTheDocument()
     expect(screen.getByText('Iniciar sesión ahora')).toBeInTheDocument()
   })
 
