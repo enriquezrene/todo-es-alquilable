@@ -8,7 +8,12 @@ import { registrarError } from '@/lib/registrar-error'
 // Mock the Button component to avoid import issues
 vi.mock('@/shared/components/ui/Button', () => {
   return {
-    default: ({ children, onClick, disabled, className }: any) => (
+    default: ({ children, onClick, disabled, className }: {
+      children?: React.ReactNode
+      onClick?: () => void
+      disabled?: boolean
+      className?: string
+    }) => (
       <button 
         onClick={onClick} 
         disabled={disabled} 

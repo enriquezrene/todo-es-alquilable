@@ -43,7 +43,7 @@ describe('orden-de-trabajo-service', () => {
         blob: vi.fn().mockResolvedValue(mockBlob),
       }
       
-      vi.mocked(fetch).mockResolvedValue(mockResponse as any)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
       await descargarOrdenDeTrabajo()
 
@@ -58,7 +58,7 @@ describe('orden-de-trabajo-service', () => {
         statusText: 'Not Found',
       }
       
-      vi.mocked(fetch).mockResolvedValue(mockResponse as any)
+      vi.mocked(fetch).mockResolvedValue(mockResponse as Response)
 
       await expect(descargarOrdenDeTrabajo()).rejects.toThrow(
         'No se pudo descargar la orden de trabajo. Por favor, inténtalo de nuevo.'
