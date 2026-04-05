@@ -10,6 +10,7 @@ import Badge from '@/shared/components/ui/Badge'
 import Button from '@/shared/components/ui/Button'
 import PhotoGallery from '@/features/listings/components/PhotoGallery'
 import WhatsAppButton from '@/features/listings/components/WhatsAppButton'
+import OrdenDeTrabajoButton from '@/features/listings/components/OrdenDeTrabajoButton'
 import ListingGrid from '@/features/listings/components/ListingGrid'
 import { obtenerAnuncioPorId, incrementarVistas, obtenerAnunciosAprobados } from '@/features/listings/services/listing-service'
 import { etiquetasCondicion, type CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
@@ -112,6 +113,17 @@ export default function AnuncioDetallePage() {
             </div>
 
             <WhatsAppButton ownerId={anuncio.ownerId} listingTitle={anuncio.title} fallbackPhone={anuncio.ownerPhone} />
+            
+            {anuncio.status === 'aprobado' && (
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600 font-medium">Protege tu alquiler:</p>
+                <OrdenDeTrabajoButton 
+                  variant="secondary" 
+                  size="sm" 
+                  className="w-full"
+                />
+              </div>
+            )}
             
             {user && user.uid === anuncio.ownerId && (
               <Link href={`/mis-anuncios/editar/${anuncio.id}`} className="block w-full">

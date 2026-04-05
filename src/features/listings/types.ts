@@ -5,6 +5,14 @@ export type ImagenSlot =
   | { tipo: 'existente'; url: string; thumbnail: string }
   | { tipo: 'nueva'; file: File; preview: string }
 
+export type OrdenDeTrabajo = {
+  id: string
+  titulo: string
+  descripcion: string
+  urlPdf: string
+  fechaCreacion: Date
+}
+
 export type FormularioAnuncio = {
   title: string
   description: string

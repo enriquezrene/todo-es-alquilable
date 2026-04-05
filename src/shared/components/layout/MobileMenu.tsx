@@ -49,6 +49,18 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             Buscar
           </Link>
 
+          <Link 
+            href="/como-funciona" 
+            onClick={onClose} 
+            className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+              pathname === '/como-funciona' 
+                ? 'bg-blue-50 text-blue-600' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            ¿Cómo funciona?
+          </Link>
+
           {user ? (
             <>
               <Link 

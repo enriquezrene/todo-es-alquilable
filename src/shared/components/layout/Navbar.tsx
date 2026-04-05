@@ -40,6 +40,17 @@ export default function Navbar() {
               Buscar
             </Link>
 
+            <Link 
+              href="/como-funciona" 
+              className={`text-sm font-medium transition-colors ${
+                pathname === '/como-funciona' 
+                  ? 'text-blue-600' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              ¿Cómo funciona?
+            </Link>
+
             {!loading && (
               <>
                 {user ? (
