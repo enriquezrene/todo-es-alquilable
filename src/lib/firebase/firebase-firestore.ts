@@ -1,6 +1,7 @@
 import {
   doc,
   setDoc,
+  addDoc,
   getDoc,
   getDocs,
   updateDoc,
@@ -22,6 +23,7 @@ import { getDbInstance } from './firebase-config'
 export {
   doc,
   setDoc,
+  addDoc,
   getDoc,
   getDocs,
   updateDoc,

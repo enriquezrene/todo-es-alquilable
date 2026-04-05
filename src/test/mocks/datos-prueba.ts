@@ -43,6 +43,7 @@ export function crearAnuncioPrueba(overrides: Partial<Anuncio> = {}): Anuncio {
     moderatorId: null,
     moderatedAt: null,
     viewCount: 0,
+    availabilityStatus: 'disponible',
     createdAt: new Date('2024-01-15'),
     updatedAt: new Date('2024-01-15'),
     ...overrides,

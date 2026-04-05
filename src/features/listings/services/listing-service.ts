@@ -45,6 +45,7 @@ function docToAnuncio(docSnap: DocumentSnapshot): Anuncio | null {
     moderatorId: data.moderatorId || null,
     moderatedAt: data.moderatedAt?.toDate() || null,
     viewCount: data.viewCount || 0,
+    availabilityStatus: data.availabilityStatus || 'disponible',
     createdAt: data.createdAt?.toDate() || new Date(),
     updatedAt: data.updatedAt?.toDate() || new Date(),
   } as Anuncio
@@ -80,6 +81,7 @@ export async function crearAnuncio(data: CrearAnuncioData, id?: string): Promise
     moderatorId: null,
     moderatedAt: null,
     viewCount: 0,
+    availabilityStatus: 'disponible',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })

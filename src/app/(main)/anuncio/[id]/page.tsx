@@ -9,7 +9,8 @@ import Spinner from '@/shared/components/ui/Spinner'
 import Badge from '@/shared/components/ui/Badge'
 import Button from '@/shared/components/ui/Button'
 import PhotoGallery from '@/features/listings/components/PhotoGallery'
-import WhatsAppButton from '@/features/listings/components/WhatsAppButton'
+import RentalRequestButton from '@/features/rentals/components/RentalRequestButton'
+import RentalManagementPanel from '@/features/rentals/components/RentalManagementPanel'
 import ListingGrid from '@/features/listings/components/ListingGrid'
 import { obtenerAnuncioPorId, incrementarVistas, obtenerAnunciosAprobados } from '@/features/listings/services/listing-service'
 import { etiquetasCondicion, type CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
@@ -77,6 +78,9 @@ export default function AnuncioDetallePage() {
             <div className="flex flex-wrap items-center gap-2">
               <Badge>{anuncio.categoryName}</Badge>
               <Badge variant="info">{etiquetasCondicion[anuncio.condition as CondicionArticulo]}</Badge>
+              <Badge variant={anuncio.availabilityStatus === 'disponible' ? 'success' : 'warning'}>
+                {anuncio.availabilityStatus === 'disponible' ? 'Disponible' : 'Alquilado'}
+              </Badge>
               <span className="text-sm text-gray-500">{anuncio.province}</span>
             </div>
 
@@ -111,14 +115,17 @@ export default function AnuncioDetallePage() {
               </div>
             </div>
 
-            <WhatsAppButton ownerId={anuncio.ownerId} listingTitle={anuncio.title} fallbackPhone={anuncio.ownerPhone} />
+            <RentalRequestButton anuncio={anuncio} />
             
             {user && user.uid === anuncio.ownerId && (
-              <Link href={`/mis-anuncios/editar/${anuncio.id}`} className="block w-full">
-                <Button variant="outline" size="sm" className="w-full">
-                  Editar anuncio
-                </Button>
-              </Link>
+              <>
+                <Link href={`/mis-anuncios/editar/${anuncio.id}`} className="block w-full">
+                  <Button variant="outline" size="sm" className="w-full">
+                    Editar anuncio
+                  </Button>
+                </Link>
+                <RentalManagementPanel anuncio={anuncio} />
+              </>
             )}
           </div>
         </div>

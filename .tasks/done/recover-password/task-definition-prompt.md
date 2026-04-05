@@ -1,4 +1,4 @@
-> Read the task file at .tasks/todo/recover-password/task-definition.md
+> Read the task file at .tasks/todo/renters-profile/task-definition.md
 
 Review the acceptance criteria and propose an implementation plan.
 Consider:
