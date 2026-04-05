@@ -1,4 +1,4 @@
-import type { OrdenDeTrabajo } from './types'
+import type { OrdenDeTrabajo } from '../types'
 import { registrarError } from '@/lib/registrar-error'
 
 const PDF_URL = '/orden-de-trabajo.pdf'
