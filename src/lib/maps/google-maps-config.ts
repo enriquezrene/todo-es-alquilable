@@ -3,6 +3,14 @@
  * Uses the latest Dynamic Library Import API
  */
 
+type WindowWithGoogleMaps = Window & {
+  google?: {
+    maps?: {
+      importLibrary: (library: string) => Promise<unknown>
+    }
+  }
+}
+
 // Global configuration for Google Maps
 export const GOOGLE_MAPS_CONFIG = {
   defaultCenter: {
@@ -72,8 +80,14 @@ export const loadGoogleMapsLibrary = async (library: string): Promise<unknown> =
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return await (window as any).google.maps.importLibrary(library)
+    const windowWithGoogleMaps = window as WindowWithGoogleMaps
+    const importLibrary = windowWithGoogleMaps.google?.maps?.importLibrary
+
+    if (!importLibrary) {
+      throw new Error('Google Maps importLibrary is not available')
+    }
+
+    return await importLibrary(library)
   } catch (error) {
     console.error(`Failed to load Google Maps library: ${library}`, error)
     throw error
@@ -81,7 +95,6 @@ export const loadGoogleMapsLibrary = async (library: string): Promise<unknown> =
 }
 
 // Initialize Google Maps if not already done
-if (typeof window !== 'undefined' && !((window as any).google?.maps)) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+if (typeof window !== 'undefined' && !(window as WindowWithGoogleMaps).google?.maps) {
   initializeGoogleMaps()
 }
