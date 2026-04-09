@@ -209,8 +209,6 @@ export default function GoogleMap({
           streetViewControl: controls.streetView,
           zoomControl: controls.zoom,
           gestureHandling: 'cooperative',
-          language: GOOGLE_MAPS_CONFIG.language,
-          region: GOOGLE_MAPS_CONFIG.region,
           styles: [
             {
               featureType: 'poi',
