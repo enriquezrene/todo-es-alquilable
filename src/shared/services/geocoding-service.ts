@@ -32,6 +32,55 @@ export interface ErrorUbicacion extends Error {
   tipo: string
 }
 
+type GoogleAddressComponent = {
+  long_name: string
+  short_name: string
+  types: string[]
+}
+
+type GoogleGeocodingResult = {
+  formatted_address: string
+  geometry: {
+    location: Coordenadas
+    location_type: string
+  }
+  address_components: GoogleAddressComponent[]
+  types: string[]
+}
+
+type GooglePlacesDetailsResult = {
+  formatted_address: string
+  geometry: {
+    location: Coordenadas
+  }
+  address_components: GoogleAddressComponent[]
+  types: string[]
+}
+
+type GoogleGeocodingResponse = {
+  status: string
+  error_message?: string
+  results: GoogleGeocodingResult[]
+}
+
+type GoogleAutocompletePrediction = {
+  place_id: string
+  description: string
+  terms?: Array<{ value: string }>
+}
+
+type GooglePlacesAutocompleteResponse = {
+  status: string
+  error_message?: string
+  predictions: GoogleAutocompletePrediction[]
+}
+
+type GooglePlaceDetailsResponse = {
+  status: string
+  error_message?: string
+  result: GooglePlacesDetailsResult
+}
+
 class GeocodingService {
   private apiKey: string
   private baseUrl = 'https://maps.googleapis.com/maps/api'
@@ -44,7 +93,7 @@ class GeocodingService {
     }
   }
 
-  private async hacerRequest(endpoint: string, params: Record<string, string>): Promise<unknown> {
+  private async hacerRequest<T>(endpoint: string, params: Record<string, string>): Promise<T> {
     if (!this.apiKey) {
       throw new Error('Google Maps API key is not configured')
     }
@@ -69,7 +118,7 @@ class GeocodingService {
         throw new Error(`Google Maps API error: ${data.status} - ${data.error_message || 'Unknown error'}`)
       }
 
-      return data
+      return data as T
     } catch (error) {
       registrarError(error as Error, 'GeocodingService:hacerRequest')
       throw error
@@ -78,17 +127,15 @@ class GeocodingService {
 
   async geocodificarDireccion(direccion: string): Promise<ResultadoGeocoding> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = await this.hacerRequest('/geocode/json', {
+      const data = await this.hacerRequest<GoogleGeocodingResponse>('/geocode/json', {
         address: direccion,
         components: 'country:EC'
-      }) as any
+      })
 
       if (data.status === 'ZERO_RESULTS') {
         throw new Error('No se encontraron resultados para la dirección')
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const resultado = data.results[0]
       const ubicacion = this.procesarResultadoGeocoding(resultado)
 
@@ -105,16 +152,14 @@ class GeocodingService {
 
   async geocodificarInverso(coordenadas: Coordenadas): Promise<ResultadoGeocoding> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = await this.hacerRequest('/geocode/json', {
+      const data = await this.hacerRequest<GoogleGeocodingResponse>('/geocode/json', {
         latlng: `${coordenadas.lat},${coordenadas.lng}`
-      }) as any
+      })
 
       if (data.status === 'ZERO_RESULTS') {
         throw new Error('No se encontraron resultados para las coordenadas')
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const resultado = data.results[0]
       const ubicacion = this.procesarResultadoGeocoding(resultado)
 
@@ -133,23 +178,20 @@ class GeocodingService {
     if (!input || input.length < 3) return []
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = await this.hacerRequest('/place/autocomplete/json', {
+      const data = await this.hacerRequest<GooglePlacesAutocompleteResponse>('/place/autocomplete/json', {
         input,
         components: 'country:EC',
         types: 'address'
-      }) as any
+      })
 
       if (data.status === 'ZERO_RESULTS') {
         return []
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return data.predictions.map((prediction: any) => ({
+      return data.predictions.map((prediction) => ({
         lugarId: prediction.place_id,
         descripcion: prediction.description,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        terminosCoincidentes: prediction.terms?.map((term: any) => term.value) || []
+        terminosCoincidentes: prediction.terms?.map((term) => term.value) || []
       }))
     } catch (error) {
       registrarError(error as Error, 'GeocodingService:obtenerSugerencias')
@@ -159,17 +201,15 @@ class GeocodingService {
 
   async obtenerDetallesLugar(lugarId: string): Promise<ResultadoGeocoding> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = await this.hacerRequest('/place/details/json', {
+      const data = await this.hacerRequest<GooglePlaceDetailsResponse>('/place/details/json', {
         place_id: lugarId,
         fields: 'geometry,address_components,formatted_address,types'
-      }) as any
+      })
 
       if (data.status === 'ZERO_RESULTS') {
         throw new Error('No se encontraron detalles para el lugar')
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const resultado = data.result
       const ubicacion = this.procesarResultadoPlaces(resultado)
 
@@ -184,9 +224,7 @@ class GeocodingService {
     }
   }
 
-  private procesarResultadoGeocoding(resultado: unknown): Ubicacion {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = resultado as any
+  private procesarResultadoGeocoding(result: GoogleGeocodingResult): Ubicacion {
     const location = result.geometry.location
     const addressComponents = result.address_components || []
 
@@ -206,9 +244,7 @@ class GeocodingService {
     }
   }
 
-  private procesarResultadoPlaces(resultado: unknown): Ubicacion {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const result = resultado as any
+  private procesarResultadoPlaces(result: GooglePlacesDetailsResult): Ubicacion {
     const location = result.geometry.location
     const addressComponents = result.address_components || []
 
@@ -228,11 +264,9 @@ class GeocodingService {
     }
   }
 
-  private extraerDireccion(components: unknown[]): string {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const comps = components as any[]
-    const streetNumber = comps.find(c => c.types.includes('street_number'))?.long_name
-    const route = comps.find(c => c.types.includes('route'))?.long_name
+  private extraerDireccion(components: GoogleAddressComponent[]): string {
+    const streetNumber = components.find(c => c.types.includes('street_number'))?.long_name
+    const route = components.find(c => c.types.includes('route'))?.long_name
     
     if (streetNumber && route) {
       return `${route} ${streetNumber}`
@@ -241,33 +275,25 @@ class GeocodingService {
     return route || ''
   }
 
-  private extraerCiudad(components: unknown[]): string | undefined {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const comps = components as any[]
-    return comps.find(c => 
+  private extraerCiudad(components: GoogleAddressComponent[]): string | undefined {
+    return components.find(c => 
       c.types.includes('locality') || 
       c.types.includes('administrative_area_level_2')
     )?.long_name
   }
 
-  private extraerProvincia(components: unknown[]): string | undefined {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const comps = components as any[]
-    return comps.find(c => 
+  private extraerProvincia(components: GoogleAddressComponent[]): string | undefined {
+    return components.find(c => 
       c.types.includes('administrative_area_level_1')
     )?.long_name
   }
 
-  private extraerPais(components: unknown[]): string | undefined {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const comps = components as any[]
-    return comps.find(c => c.types.includes('country'))?.long_name
+  private extraerPais(components: GoogleAddressComponent[]): string | undefined {
+    return components.find(c => c.types.includes('country'))?.long_name
   }
 
-  private extraerCodigoPostal(components: unknown[]): string | undefined {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const comps = components as any[]
-    return comps.find(c => c.types.includes('postal_code'))?.long_name
+  private extraerCodigoPostal(components: GoogleAddressComponent[]): string | undefined {
+    return components.find(c => c.types.includes('postal_code'))?.long_name
   }
 
   // Utility method to validate coordinates
