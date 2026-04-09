@@ -144,7 +144,7 @@ export default function GoogleMap({
   }, [])
 
   const createMarkerIcon = (type: MapMarker['type']) => {
-    const icons = {
+    const icons: Record<NonNullable<MapMarker['type']>, google.maps.Icon> = {
       user: {
         url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
           <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -181,7 +181,11 @@ export default function GoogleMap({
       }
     }
 
-    return icons[type] || icons.user
+    if (!type) {
+      return icons.user
+    }
+
+    return icons[type]
   }
 
   useEffect(() => {
