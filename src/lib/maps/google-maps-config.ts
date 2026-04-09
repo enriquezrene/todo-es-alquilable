@@ -73,8 +73,17 @@ export interface GoogleMapsInstance {
   Point: typeof google.maps.Point
 }
 
+type GoogleMapsLibraryName = 'maps' | 'marker'
+
+type GoogleMapsLibraryMap = {
+  maps: Pick<GoogleMapsInstance, 'Map'>
+  marker: Pick<GoogleMapsInstance, 'Marker'>
+}
+
 // Load Google Maps library dynamically
-export const loadGoogleMapsLibrary = async (library: string): Promise<unknown> => {
+export const loadGoogleMapsLibrary = async <T extends GoogleMapsLibraryName>(
+  library: T,
+): Promise<GoogleMapsLibraryMap[T]> => {
   if (!isGoogleMapsConfigured()) {
     throw new Error('Google Maps API key is not configured')
   }
@@ -87,7 +96,7 @@ export const loadGoogleMapsLibrary = async (library: string): Promise<unknown> =
       throw new Error('Google Maps importLibrary is not available')
     }
 
-    return await importLibrary(library)
+    return await importLibrary(library) as GoogleMapsLibraryMap[T]
   } catch (error) {
     console.error(`Failed to load Google Maps library: ${library}`, error)
     throw error
