@@ -13,6 +13,8 @@ import Input from '@/shared/components/ui/Input'
 import Select from '@/shared/components/ui/Select'
 import { useToast } from '@/shared/providers/ToastProvider'
 import { registrarError } from '@/lib/registrar-error'
+import type { Ubicacion } from '@/shared/types/location'
+import LocationSelector from '@/features/profile/components/LocationSelector'
 
 export default function RegisterForm() {
   const router = useRouter()
@@ -24,10 +26,11 @@ export default function RegisterForm() {
     password: '',
     confirmPassword: '',
     displayName: '',
-    phone: '+593',
+    phone: '',
     province: '',
     city: '',
     address: '',
+    ubicacion: undefined,
   })
 
   const provincias = useMemo(
@@ -55,6 +58,11 @@ export default function RegisterForm() {
 
   const handlePhoneBlur = () => {
     setDatos((prev) => ({ ...prev, phone: formatearTelefonoEcuador(prev.phone) }))
+  }
+
+  const handleLocationChange = (ubicacion: Ubicacion | null) => {
+    setDatos((prev) => ({ ...prev, ubicacion: ubicacion || undefined }))
+    setErrores((prev) => ({ ...prev, ubicacion: '' }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -125,7 +133,7 @@ export default function RegisterForm() {
         onChange={handleChange('phone')}
         onBlur={handlePhoneBlur}
         error={errores.phone}
-        placeholder="+593991234567"
+        placeholder="0999999999"
       />
       <div className="grid gap-4 sm:grid-cols-2">
         <Select
@@ -153,6 +161,13 @@ export default function RegisterForm() {
         error={errores.address}
         placeholder="Av. Principal 123, Sector Norte"
       />
+      <div className="border-t pt-4">
+        <LocationSelector
+          onLocationChange={handleLocationChange}
+          initialLocation={datos.ubicacion}
+          error={errores.ubicacion}
+        />
+      </div>
       <Button type="submit" loading={loading} className="w-full">
         Crear cuenta
       </Button>

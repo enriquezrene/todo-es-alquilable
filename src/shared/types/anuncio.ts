@@ -1,6 +1,7 @@
 import type { EstadoAnuncio } from '@/lib/dominio/estados-anuncio'
 import type { UnidadPrecio } from '@/lib/dominio/unidades-precio'
 import type { CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
+import type { Ubicacion } from './location'
 
 export type Anuncio = {
   id: string
@@ -13,6 +14,7 @@ export type Anuncio = {
   price: number
   priceUnit: UnidadPrecio
   province: string
+  ubicacion?: Ubicacion // Owner's precise location for display
   images: string[]
   thumbnails: string[]
   ownerId: string

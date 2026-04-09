@@ -1,6 +1,19 @@
+export function normalizarTelefonoWhatsApp(telefono: string): string {
+  const soloDigitos = telefono.replace(/\D/g, '')
+
+  if (soloDigitos.startsWith('593') && soloDigitos.length === 12) {
+    return soloDigitos
+  }
+
+  if (soloDigitos.startsWith('0') && soloDigitos.length === 10) {
+    return `593${soloDigitos.slice(1)}`
+  }
+
+  return soloDigitos
+}
+
 export function construirEnlaceWhatsApp(telefono: string, mensaje: string): string {
-  // Keep + sign at the beginning, remove other formatting characters
-  const telefonoLimpio = telefono.replace(/[^\+0-9]/g, '').replace(/^\+/, '+')
+  const telefonoLimpio = normalizarTelefonoWhatsApp(telefono)
   const mensajeCodificado = encodeURIComponent(mensaje)
   return `https://wa.me/${telefonoLimpio}?text=${mensajeCodificado}`
 }

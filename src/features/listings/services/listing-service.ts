@@ -19,10 +19,35 @@ import {
 } from '@/lib/firebase/firebase-firestore'
 import type { Anuncio } from '@/shared/types/anuncio'
 import type { EstadoAnuncio } from '@/lib/dominio/estados-anuncio'
+import { registrarError } from '@/lib/registrar-error'
+import type { Ubicacion } from '@/shared/types/location'
+import { obtenerUbicacionAproximada } from '@/lib/dominio/obtener-ubicacion-aproximada'
 
-function docToAnuncio(docSnap: DocumentSnapshot): Anuncio | null {
+async function obtenerUbicacionOwner(ownerId: string): Promise<Ubicacion | null> {
+  try {
+    const ownerDoc = await getDoc(doc(getDb(), 'users', ownerId))
+    if (ownerDoc.exists()) {
+      const ownerData = ownerDoc.data()
+      return obtenerUbicacionAproximada(ownerData?.ubicacion as Ubicacion | undefined) || null
+    }
+    return null
+  } catch (error) {
+    registrarError(error as Error, 'listing-service:obtenerUbicacionOwner')
+    return null
+  }
+}
+
+async function docToAnuncio(docSnap: DocumentSnapshot): Promise<Anuncio | null> {
   if (!docSnap.exists()) return null
   const data = docSnap.data()!
+  
+  // Obtener ubicación del owner si existe
+  const ownerId = data.ownerId
+  let ubicacion = null
+  if (ownerId) {
+    ubicacion = await obtenerUbicacionOwner(ownerId)
+  }
+  
   return {
     id: docSnap.id,
     title: data.title,
@@ -34,6 +59,7 @@ function docToAnuncio(docSnap: DocumentSnapshot): Anuncio | null {
     price: data.price,
     priceUnit: data.priceUnit,
     province: data.province,
+    ubicacion: ubicacion,
     images: data.images || [],
     thumbnails: data.thumbnails || [],
     ownerId: data.ownerId,
@@ -89,7 +115,7 @@ export async function crearAnuncio(data: CrearAnuncioData, id?: string): Promise
 
 export async function obtenerAnuncioPorId(id: string): Promise<Anuncio | null> {
   const docSnap = await getDoc(doc(getDb(), 'listings', id))
-  return docToAnuncio(docSnap)
+  return await docToAnuncio(docSnap)
 }
 
 export async function obtenerAnunciosAprobados(
@@ -106,7 +132,8 @@ export async function obtenerAnunciosAprobados(
 
   const q = query(collection(getDb(), 'listings'), ...constraints)
   const snapshot = await getDocs(q)
-  const anuncios = snapshot.docs.map(docToAnuncio).filter(Boolean) as Anuncio[]
+  const anunciosPromises = snapshot.docs.map(docToAnuncio)
+  const anuncios = (await Promise.all(anunciosPromises)).filter(Boolean) as Anuncio[]
   const last = snapshot.docs[snapshot.docs.length - 1] || null
 
   return { anuncios, lastDoc: last }
@@ -125,7 +152,10 @@ export async function obtenerAnunciosPorUsuario(
 
   const q = query(collection(getDb(), 'listings'), ...constraints)
   const snapshot = await getDocs(q)
-  return snapshot.docs.map(docToAnuncio).filter(Boolean) as Anuncio[]
+  const anunciosPromises = snapshot.docs.map(docToAnuncio)
+  const anuncios = (await Promise.all(anunciosPromises)).filter(Boolean) as Anuncio[]
+
+  return anuncios
 }
 
 export async function actualizarAnuncio(

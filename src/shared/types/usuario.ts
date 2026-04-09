@@ -1,3 +1,5 @@
+import type { Ubicacion } from './location'
+
 export type RolUsuario = 'user' | 'moderator' | 'admin' | 'super_admin'
 
 export type Usuario = {
@@ -9,6 +11,7 @@ export type Usuario = {
   province: string
   city: string
   address: string
+  ubicacion?: Ubicacion // Optional precise location from Google Maps
   role: RolUsuario
   activeListingCount: number
   createdAt: Date

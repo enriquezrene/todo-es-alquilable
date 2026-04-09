@@ -12,11 +12,13 @@ import PhotoGallery from '@/features/listings/components/PhotoGallery'
 import WhatsAppButton from '@/features/listings/components/WhatsAppButton'
 import OrdenDeTrabajoButton from '@/features/listings/components/OrdenDeTrabajoButton'
 import ListingGrid from '@/features/listings/components/ListingGrid'
+import ApproximateLocationCard from '@/features/listings/components/ApproximateLocationCard'
 import { obtenerAnuncioPorId, incrementarVistas, obtenerAnunciosAprobados } from '@/features/listings/services/listing-service'
 import { etiquetasCondicion, type CondicionArticulo } from '@/lib/dominio/condiciones-articulo'
 import { formatearPrecio } from '@/lib/dominio/formatear-precio'
 import { formatearFecha } from '@/lib/dominio/formatear-fecha'
 import { registrarError } from '@/lib/registrar-error'
+import { mostrarUbicacionSegura } from '@/lib/dominio/formatear-ubicacion'
 import type { Anuncio } from '@/shared/types/anuncio'
 
 export default function AnuncioDetallePage() {
@@ -79,6 +81,9 @@ export default function AnuncioDetallePage() {
               <Badge>{anuncio.categoryName}</Badge>
               <Badge variant="info">{etiquetasCondicion[anuncio.condition as CondicionArticulo]}</Badge>
               <span className="text-sm text-gray-500">{anuncio.province}</span>
+              {anuncio.ubicacion && (
+                <span className="text-sm text-gray-500">• Ubicación aprox.: {mostrarUbicacionSegura(anuncio.ubicacion)}</span>
+              )}
             </div>
 
             <h1 className="mt-3 text-2xl font-bold text-gray-900">{anuncio.title}</h1>
@@ -107,10 +112,17 @@ export default function AnuncioDetallePage() {
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{anuncio.ownerName}</p>
-                  <p className="text-sm text-gray-500">{anuncio.province}</p>
+                  <div className="text-sm text-gray-500">
+                    <p>{anuncio.province}</p>
+                    {anuncio.ubicacion && (
+                      <p>Ubicación aprox.: {mostrarUbicacionSegura(anuncio.ubicacion)}</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
+
+            <ApproximateLocationCard ubicacion={anuncio.ubicacion} />
 
             <WhatsAppButton ownerId={anuncio.ownerId} listingTitle={anuncio.title} fallbackPhone={anuncio.ownerPhone} />
             

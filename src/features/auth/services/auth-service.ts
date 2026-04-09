@@ -11,7 +11,7 @@ export async function registrarUsuario(datos: FormularioRegistro) {
   }
   
   if (!validarTelefonoEcuador(datos.phone)) {
-    throw new Error('El número de teléfono no es válido. Debe tener formato +593XXXXXXXXX')
+    throw new Error('El número de teléfono no es válido. Debe tener formato 0999999999')
   }
 
   const credential = await registrarConEmail(datos.email, datos.password)
@@ -28,6 +28,7 @@ export async function registrarUsuario(datos: FormularioRegistro) {
     province: datos.province,
     city: datos.city,
     address: datos.address,
+    ubicacion: datos.ubicacion || null,
     role: 'user',
     activeListingCount: 0,
     createdAt: serverTimestamp(),

@@ -8,11 +8,13 @@ import { validarFormularioPerfil } from '@/features/profile/services/validar-for
 import { formatearTelefonoEcuador } from '@/lib/dominio/validar-telefono-ecuador'
 import { obtenerNombresProvincias, obtenerCiudadesPorProvincia } from '@/lib/dominio/provincias-ecuador'
 import type { FormularioPerfil, ErroresFormulario } from '../types'
+import type { Ubicacion } from '@/shared/types/location'
 import { registrarError } from '@/lib/registrar-error'
 import Input from '@/shared/components/ui/Input'
 import Select from '@/shared/components/ui/Select'
 import Button from '@/shared/components/ui/Button'
 import Spinner from '@/shared/components/ui/Spinner'
+import LocationSelector from './LocationSelector'
 
 export default function ProfileForm() {
   const { user } = useAuth()
@@ -50,10 +52,11 @@ export default function ProfileForm() {
         if (perfil) {
           setDatos({
             displayName: perfil.displayName,
-            phone: perfil.phone,
+            phone: formatearTelefonoEcuador(perfil.phone),
             province: perfil.province,
             city: perfil.city,
             address: perfil.address,
+            ubicacion: perfil.ubicacion,
           })
         }
       } catch (e) {
@@ -73,6 +76,11 @@ export default function ProfileForm() {
       return updated
     })
     setErrores((prev) => ({ ...prev, [field]: '' }))
+  }
+
+  const handleLocationChange = (ubicacion: Ubicacion | null) => {
+    setDatos((prev) => ({ ...prev, ubicacion: ubicacion || undefined }))
+    setErrores((prev) => ({ ...prev, ubicacion: '' }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,47 +111,58 @@ export default function ProfileForm() {
   if (loading) return <Spinner />
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input 
-        label="Nombre" 
-        value={datos.displayName} 
-        onChange={handleChange('displayName')} 
-        error={errores.displayName}
-      />
-      <Input 
-        label="Teléfono" 
-        value={datos.phone} 
-        onChange={handleChange('phone')} 
-        error={errores.phone}
-        placeholder="+593991234567" 
-        required
-      />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Select 
-          label="Provincia" 
-          options={provincias} 
-          value={datos.province} 
-          onChange={handleChange('province')} 
-          placeholder="Selecciona" 
-          error={errores.province}
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <Input 
+          label="Nombre" 
+          value={datos.displayName} 
+          onChange={handleChange('displayName')} 
+          error={errores.displayName}
         />
-        <Select 
-          label="Ciudad" 
-          options={ciudades} 
-          value={datos.city} 
-          onChange={handleChange('city')} 
-          placeholder="Selecciona" 
-          disabled={!datos.province}
-          error={errores.city}
+        <Input 
+          label="Teléfono" 
+          value={datos.phone} 
+          onChange={handleChange('phone')} 
+          error={errores.phone}
+          placeholder="0999999999" 
+          required
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Select 
+            label="Provincia" 
+            options={provincias} 
+            value={datos.province} 
+            onChange={handleChange('province')} 
+            placeholder="Selecciona" 
+            error={errores.province}
+          />
+          <Select 
+            label="Ciudad" 
+            options={ciudades} 
+            value={datos.city} 
+            onChange={handleChange('city')} 
+            placeholder="Selecciona" 
+            disabled={!datos.province}
+            error={errores.city}
+          />
+        </div>
+        <Input 
+          label="Dirección" 
+          value={datos.address} 
+          onChange={handleChange('address')} 
+          error={errores.address}
+          required
         />
       </div>
-      <Input 
-        label="Dirección" 
-        value={datos.address} 
-        onChange={handleChange('address')} 
-        error={errores.address}
-        required
-      />
+
+      <div className="border-t pt-6">
+        <LocationSelector
+          onLocationChange={handleLocationChange}
+          initialLocation={datos.ubicacion}
+          error={errores.ubicacion}
+        />
+      </div>
+
       <Button type="submit" loading={saving}>
         Guardar cambios
       </Button>

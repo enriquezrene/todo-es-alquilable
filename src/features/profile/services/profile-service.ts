@@ -22,7 +22,7 @@ export async function actualizarPerfil(uid: string, datos: FormularioPerfil): Pr
   }
   
   if (!validarTelefonoEcuador(datos.phone)) {
-    throw new Error('El número de teléfono no es válido. Debe tener formato +593XXXXXXXXX')
+    throw new Error('El número de teléfono no es válido. Debe tener formato 0999999999')
   }
   
   // Server-side validation: other required fields

@@ -13,7 +13,7 @@ export function validarFormularioPerfil(datos: FormularioPerfil): ErroresFormula
   if (!datos.phone.trim()) {
     errores.phone = 'El teléfono es requerido'
   } else if (!validarTelefonoEcuador(datos.phone)) {
-    errores.phone = 'El teléfono debe tener formato +593XXXXXXXXX'
+    errores.phone = 'El teléfono debe tener formato 0999999999'
   }
 
   if (!datos.province) {

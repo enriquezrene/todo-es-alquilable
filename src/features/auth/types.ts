@@ -1,3 +1,5 @@
+import type { Ubicacion } from '@/shared/types/location'
+
 export type FormularioRegistro = {
   email: string
   password: string
@@ -7,6 +9,7 @@ export type FormularioRegistro = {
   province: string
   city: string
   address: string
+  ubicacion?: Ubicacion
 }
 
 export type FormularioLogin = {

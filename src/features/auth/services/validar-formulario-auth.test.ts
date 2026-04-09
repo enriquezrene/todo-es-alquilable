@@ -7,7 +7,7 @@ const registroValido: FormularioRegistro = {
   password: '123456',
   confirmPassword: '123456',
   displayName: 'Juan Pérez',
-  phone: '+593991234567',
+  phone: '0991234567',
   province: 'Pichincha',
   city: 'Quito',
   address: 'Av. Test 123',

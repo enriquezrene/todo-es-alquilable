@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { formatearPrecio } from '@/lib/dominio/formatear-precio'
 import type { Anuncio } from '@/shared/types/anuncio'
 import Badge from '@/shared/components/ui/Badge'
+import { mostrarUbicacionSegura } from '@/lib/dominio/formatear-ubicacion'
 
 type ListingCardProps = {
   anuncio: Anuncio
@@ -28,7 +29,12 @@ export default function ListingCard({ anuncio }: ListingCardProps) {
             {formatearPrecio(anuncio.price, anuncio.priceUnit)}
           </p>
           <div className="mt-2 flex items-center justify-between">
-            <span className="text-xs text-gray-500">{anuncio.province}</span>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span>{anuncio.province}</span>
+              {anuncio.ubicacion && (
+                <span>• Ubicación aprox.: {mostrarUbicacionSegura(anuncio.ubicacion)}</span>
+              )}
+            </div>
             <Badge>{anuncio.categoryName}</Badge>
           </div>
         </div>
