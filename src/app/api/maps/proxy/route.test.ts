@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { construirUrlGoogleMaps } from './route'
+import { construirUrlGoogleMaps } from './construir-url-google-maps'
 
 describe('construirUrlGoogleMaps', () => {
   it('no restringe autocomplete solo a direcciones', () => {
