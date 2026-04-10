@@ -1,5 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const construirUrlGoogleMaps = ({
+  endpoint,
+  apiKey,
+  query,
+  lat,
+  lng,
+  address,
+}: {
+  endpoint: string
+  apiKey: string
+  query: string | null
+  lat: string | null
+  lng: string | null
+  address: string | null
+}) => {
+  let url = `https://maps.googleapis.com/maps/api/${endpoint}?key=${apiKey}&language=es&region=EC`
+
+  if (endpoint === 'place/autocomplete/json') {
+    if (query) {
+      // No limitamos a `types=address` para permitir sectores, parroquias y localidades
+      // que Google Maps sí sugiere para búsquedas como "Llano Chico".
+      url += `&input=${encodeURIComponent(query)}&components=country:EC`
+    }
+  } else if (endpoint === 'geocode/json') {
+    if (address) {
+      url += `&address=${encodeURIComponent(address)}&components=country:EC`
+    } else if (lat && lng) {
+      url += `&latlng=${lat},${lng}`
+    }
+  }
+
+  return url
+}
+
 // Google Maps API proxy to avoid CORS issues
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -19,25 +53,21 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let url = `https://maps.googleapis.com/maps/api/${endpoint}?key=${apiKey}&language=es&region=EC`
-
-    // Build URL based on endpoint and parameters
-    if (endpoint === 'place/autocomplete/json') {
-      if (query) {
-        url += `&input=${encodeURIComponent(query)}&components=country:EC&types=address`
-      }
-    } else if (endpoint === 'geocode/json') {
-      if (address) {
-        url += `&address=${encodeURIComponent(address)}&components=country:EC`
-      } else if (lat && lng) {
-        url += `&latlng=${lat},${lng}`
-      }
-    } else {
+    if (endpoint !== 'place/autocomplete/json' && endpoint !== 'geocode/json') {
       return NextResponse.json(
         { error: 'Invalid endpoint' },
         { status: 400 }
       )
     }
+
+    const url = construirUrlGoogleMaps({
+      endpoint,
+      apiKey,
+      query,
+      lat,
+      lng,
+      address,
+    })
 
     // Make request to Google Maps API
     const response = await fetch(url)

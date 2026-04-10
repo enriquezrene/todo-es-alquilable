@@ -180,8 +180,7 @@ class GeocodingService {
     try {
       const data = await this.hacerRequest<GooglePlacesAutocompleteResponse>('/place/autocomplete/json', {
         input,
-        components: 'country:EC',
-        types: 'address'
+        components: 'country:EC'
       })
 
       if (data.status === 'ZERO_RESULTS') {
