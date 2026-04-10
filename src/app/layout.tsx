@@ -1,12 +1,10 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/shared/providers/AuthProvider'
 import { ToastProvider } from '@/shared/providers/ToastProvider'
 import Navbar from '@/shared/components/layout/Navbar'
 import Footer from '@/shared/components/layout/Footer'
-
-const inter = Inter({ subsets: ['latin'] })
+import GoogleAnalytics from '@/shared/components/analytics/GoogleAnalytics'
 
 export const metadata: Metadata = {
   title: 'Todo es Alquilable - Alquila lo que necesites',
@@ -23,9 +21,12 @@ export const viewport = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+
   return (
     <html lang="es">
-      <body className={`${inter.className} flex min-h-screen flex-col`}>
+      {googleAnalyticsId ? <GoogleAnalytics measurementId={googleAnalyticsId} /> : null}
+      <body className="flex min-h-screen flex-col">
         <AuthProvider>
           <ToastProvider>
             <Navbar />
